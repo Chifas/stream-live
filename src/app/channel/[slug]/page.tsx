@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { getChannel, isFollowing } from "@/lib/queries";
 import { isPathLive, hlsUrlFor } from "@/lib/mediamtx";
 import { getSession } from "@/lib/session";
+import { getT } from "@/i18n/server";
 import { Player } from "@/components/Player";
 import { Chat } from "@/components/Chat";
 import { LiveViewers } from "@/components/LiveViewers";
@@ -38,6 +39,7 @@ export default async function ChannelPage({
 
   const session = await getSession();
   const following = session ? await isFollowing(session.userId, slug) : false;
+  const t = await getT();
 
   // Emisión real (MediaMTX) si hay directo; si no, stream HLS de demo.
   const liveNow = await isPathLive(channel.streamKey);
@@ -82,7 +84,7 @@ export default async function ChannelPage({
                       : "Reproduciendo un stream HLS de demostración"
                   }
                 >
-                  {liveNow ? "● EMISIÓN REAL" : "DEMO"}
+                  {liveNow ? `● ${t("channel.realLive")}` : t("channel.demo")}
                 </span>
               </div>
               <div className="mt-2 flex flex-wrap gap-1">
@@ -102,13 +104,13 @@ export default async function ChannelPage({
                 href={`/channel/${channel.slug}/vod`}
                 className="rounded-md bg-ink-3 px-4 py-2 text-sm font-semibold text-white transition hover:bg-edge"
               >
-                ▷ Repeticiones
+                ▷ {t("channel.replays")}
               </Link>
               <button
                 className="rounded-md bg-ink-3 px-4 py-2 text-sm font-semibold text-white transition hover:bg-edge"
                 title="Requiere integración de pagos (Stripe) — ver MEJORAS.md"
               >
-                ★ Suscribirse
+                ★ {t("channel.subscribe")}
               </button>
             </div>
           </div>
@@ -117,11 +119,12 @@ export default async function ChannelPage({
         <div className="px-4 py-4">
           <div className="rounded-lg border border-edge bg-ink-2 p-4">
             <h2 className="mb-2 text-sm font-bold uppercase tracking-wide text-muted">
-              Acerca de {channel.displayName}
+              {t("channel.about")} {channel.displayName}
             </h2>
             <p className="text-sm text-white/90">{channel.about}</p>
             <p className="mt-3 text-sm text-muted">
-              {formatViewers(channel.followers)} seguidores · Idioma: {channel.language}
+              {formatViewers(channel.followers)} {t("common.followers")} ·{" "}
+              {t("channel.language")}: {channel.language}
             </p>
           </div>
         </div>

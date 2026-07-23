@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { getSession } from "@/lib/session";
 import { logoutAction } from "@/app/actions/auth";
+import { getT } from "@/i18n/server";
 import { SearchBar } from "./SearchBar";
 import { ThemeToggle } from "./ThemeToggle";
+import { LocaleToggle } from "./LocaleToggle";
 
 export async function Navbar() {
   const session = await getSession();
+  const t = await getT();
 
   return (
     <header className="sticky top-0 z-50 flex h-14 items-center justify-between gap-4 border-b border-edge bg-ink-2 px-4">
@@ -17,23 +20,24 @@ export async function Navbar() {
           </span>
         </Link>
         <nav aria-label="Navegación principal" className="hidden items-center gap-4 text-sm text-muted md:flex">
-          <Link href="/" className="hover:text-white">Explorar</Link>
-          <Link href="/browse" className="hover:text-white">Categorías</Link>
+          <Link href="/" className="hover:text-white">{t("nav.explore")}</Link>
+          <Link href="/browse" className="hover:text-white">{t("nav.categories")}</Link>
           {session && (
-            <Link href="/following" className="hover:text-white">Siguiendo</Link>
+            <Link href="/following" className="hover:text-white">{t("nav.following")}</Link>
           )}
         </nav>
       </div>
 
-      <SearchBar />
+      <SearchBar placeholder={t("nav.search")} />
 
       <div className="flex items-center gap-2">
+        <LocaleToggle />
         <ThemeToggle />
         <Link
           href="/studio"
           className="hidden rounded-md bg-brand px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-brand-2 sm:block"
         >
-          Emitir
+          {t("nav.golive")}
         </Link>
         {session ? (
           <div className="flex items-center gap-2">
@@ -47,7 +51,7 @@ export async function Navbar() {
             <span className="hidden text-sm font-semibold md:block">{session.username}</span>
             <form action={logoutAction}>
               <button className="rounded-md bg-ink-3 px-3 py-1.5 text-sm text-muted transition hover:text-white">
-                Salir
+                {t("nav.logout")}
               </button>
             </form>
           </div>
@@ -56,7 +60,7 @@ export async function Navbar() {
             href="/login"
             className="rounded-md bg-ink-3 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-edge"
           >
-            Entrar
+            {t("nav.login")}
           </Link>
         )}
       </div>

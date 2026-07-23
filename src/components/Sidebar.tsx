@@ -2,18 +2,20 @@ import Link from "next/link";
 import Image from "next/image";
 import { getChannels } from "@/lib/queries";
 import { formatViewers } from "@/lib/format";
+import { getT } from "@/i18n/server";
 
 export async function Sidebar() {
   const live = await getChannels();
+  const t = await getT();
 
   return (
     <aside
-      aria-label="Canales recomendados"
+      aria-label={t("sidebar.recommended")}
       className="hidden w-60 shrink-0 border-r border-edge bg-ink-2 lg:block"
     >
       <div className="sticky top-14 max-h-[calc(100vh-3.5rem)] overflow-y-auto py-4">
         <h2 className="px-4 pb-2 text-xs font-bold uppercase tracking-wider text-muted">
-          Canales recomendados
+          {t("sidebar.recommended")}
         </h2>
         <ul>
           {live.map((c) => (

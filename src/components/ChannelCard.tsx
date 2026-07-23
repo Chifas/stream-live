@@ -2,8 +2,10 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Channel } from "@/lib/queries";
 import { formatViewers } from "@/lib/format";
+import { getT } from "@/i18n/server";
 
-export function ChannelCard({ channel }: { channel: Channel }) {
+export async function ChannelCard({ channel }: { channel: Channel }) {
+  const t = await getT();
   return (
     <div className="group">
       <Link href={`/channel/${channel.slug}`} className="block">
@@ -17,10 +19,10 @@ export function ChannelCard({ channel }: { channel: Channel }) {
             className="aspect-video w-full object-cover transition group-hover:brightness-110"
           />
           <span className="absolute left-2 top-2 flex items-center gap-1 rounded bg-live px-1.5 py-0.5 text-[11px] font-bold uppercase text-white">
-            <span className="h-1.5 w-1.5 rounded-full bg-white live-dot" /> Live
+            <span className="h-1.5 w-1.5 rounded-full bg-white live-dot" /> {t("card.live")}
           </span>
           <span className="absolute bottom-2 left-2 rounded bg-black/80 px-1.5 py-0.5 text-[11px] font-semibold text-white">
-            {formatViewers(channel.baseViewers)} espectadores
+            {formatViewers(channel.baseViewers)} {t("card.viewers")}
           </span>
         </div>
       </Link>

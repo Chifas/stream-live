@@ -17,6 +17,8 @@ Estado del proyecto y hoja de ruta. Marcado ✅ lo ya implementado en el repo.
 - ✅ **Accesibilidad**: foco visible, skip-link, `aria-label` en navegación y
   controles, categorías como enlaces, `aria-live` en el chat.
 - ✅ **Tests E2E** con **Playwright** (home, canal, chat, búsqueda, login).
+- ✅ **i18n español/inglés**: diccionarios, cookie de idioma, provider + selector
+  (ES/EN) en la barra superior; UI principal traducida.
 - ✅ **Base de datos** (SQLite/libSQL + Drizzle ORM): usuarios, canales, categorías,
   seguidores, mensajes y moderación, con bootstrap y seed automáticos.
 - ✅ **Autenticación** real: registro/login (hash **scrypt**), sesión **JWT** en
@@ -81,7 +83,8 @@ Estado del proyecto y hoja de ruta. Marcado ✅ lo ya implementado en el repo.
 ### 7. Calidad y operación
 - [x] ~~E2E con Playwright~~ ✅ hecho.
 - [x] ~~Accesibilidad (foco, aria, landmarks)~~ ✅ base hecha; falta subtítulos WebVTT.
-- [ ] **i18n** (español/inglés).
+- [x] ~~i18n español/inglés~~ ✅ hecho (UI principal; ampliable con más claves).
+- [ ] Traducir también las páginas secundarias (login, studio, following).
 - [ ] **Observabilidad**: Sentry + métricas de reproducción (QoE, rebuffering) — requiere DSN.
 - [ ] Subtítulos/captions (WebVTT) en el reproductor.
 

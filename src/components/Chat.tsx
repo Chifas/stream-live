@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ChatMessage, Role, ServerEvent } from "@/lib/types";
+import { useT } from "@/i18n/client";
 
 const ADJ = ["Rápido", "Épico", "Sigiloso", "Neón", "Cósmico", "Salvaje", "Turbo", "Místico"];
 const NOUN = ["Panda", "Dragon", "Halcon", "Zorro", "Buho", "Lobo", "Tigre", "Cuervo"];
@@ -71,6 +72,7 @@ function MessageText({ text, me, emotes }: { text: string; me: string; emotes: E
 }
 
 export function Chat({ channel }: { channel: string }) {
+  const t = useT();
   const [items, setItems] = useState<Item[]>([]);
   const [input, setInput] = useState("");
   const [connected, setConnected] = useState(false);
@@ -103,19 +105,27 @@ export function Chat({ channel }: { channel: string }) {
 
   useEffect(() => {
     closedRef.current = false;
+    let retry: ReturnType<typeof setTimeout>;
 
     function connect() {
+      if (closedRef.current) return;
       const proto = window.location.protocol === "https:" ? "wss" : "ws";
       const ws = new WebSocket(`${proto}://${window.location.host}/ws`);
       wsRef.current = ws;
 
+      // Ignora eventos de sockets obsoletos (p. ej. el doble montaje de
+      // StrictMode en desarrollo), que si no dejarían el estado "desconectado".
+      const isActive = () => ws === wsRef.current;
+
       ws.onopen = () => {
+        if (!isActive()) return;
         attemptsRef.current = 0;
         setConnected(true);
         ws.send(JSON.stringify({ type: "join", channel, guestName: guestName() }));
       };
 
       ws.onmessage = (evt) => {
+        if (!isActive()) return;
         const data: ServerEvent = JSON.parse(evt.data);
         switch (data.type) {
           case "welcome":
@@ -149,11 +159,12 @@ export function Chat({ channel }: { channel: string }) {
       };
 
       ws.onclose = () => {
+        if (!isActive()) return; // socket obsoleto: no togues el estado
         setConnected(false);
         if (closedRef.current) return;
         // Reconexión con backoff exponencial (máx. 30s).
         const delay = Math.min(30000, 1000 * 2 ** attemptsRef.current++);
-        setTimeout(connect, delay);
+        retry = setTimeout(connect, delay);
       };
       ws.onerror = () => ws.close();
     }
@@ -161,6 +172,7 @@ export function Chat({ channel }: { channel: string }) {
     connect();
     return () => {
       closedRef.current = true;
+      clearTimeout(retry);
       wsRef.current?.close();
     };
   }, [channel]);
@@ -188,9 +200,9 @@ export function Chat({ channel }: { channel: string }) {
   return (
     <div className="flex h-full flex-col bg-ink-2">
       <div className="flex items-center justify-between border-b border-edge px-4 py-3">
-        <h3 className="text-sm font-bold uppercase tracking-wide">Chat del directo</h3>
+        <h3 className="text-sm font-bold uppercase tracking-wide">{t("chat.title")}</h3>
         <span className={`text-xs ${connected ? "text-green-400" : "text-muted"}`}>
-          ● {connected ? "en línea" : "reconectando…"}
+          ● {connected ? t("chat.online") : t("chat.reconnecting")}
         </span>
       </div>
 
@@ -201,7 +213,7 @@ export function Chat({ channel }: { channel: string }) {
         aria-live="polite"
       >
         {items.length === 0 && (
-          <p className="px-1 text-muted">Sé el primero en escribir. ¡Saluda! 👋</p>
+          <p className="px-1 text-muted">{t("chat.empty")}</p>
         )}
         {items.map((it) =>
           it.kind === "sys" ? (
@@ -248,7 +260,7 @@ export function Chat({ channel }: { channel: string }) {
 
       {me.canModerate && (
         <p className="border-t border-edge px-3 py-1.5 text-[11px] text-muted">
-          🛡️ Moderación: <code>/timeout usuario 60</code> · <code>/ban</code> ·{" "}
+          🛡️ {t("chat.modHint")}: <code>/timeout usuario 60</code> · <code>/ban</code> ·{" "}
           <code>/slow 5</code> · <code>/clear</code> · <code>/mod usuario</code>
         </p>
       )}
@@ -259,8 +271,8 @@ export function Chat({ channel }: { channel: string }) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             maxLength={300}
-            aria-label="Mensaje de chat"
-            placeholder={`Enviar mensaje como ${me.username}`}
+            aria-label={t("chat.title")}
+            placeholder={`${t("chat.placeholder")} ${me.username}`}
             className="min-w-0 flex-1 rounded-md border border-edge bg-ink-3 px-3 py-2 text-sm outline-none placeholder:text-muted focus:border-brand"
           />
           <button
@@ -268,7 +280,7 @@ export function Chat({ channel }: { channel: string }) {
             disabled={!input.trim()}
             className="rounded-md bg-brand px-3 py-2 text-sm font-semibold text-white transition hover:bg-brand-2 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            Enviar
+            {t("chat.send")}
           </button>
         </div>
       </form>

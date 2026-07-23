@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toggleFollowAction } from "@/app/actions/follow";
+import { useT } from "@/i18n/client";
 
 export function FollowButton({
   slug,
@@ -11,6 +12,7 @@ export function FollowButton({
   slug: string;
   initialFollowing: boolean;
 }) {
+  const t = useT();
   const [following, setFollowing] = useState(initialFollowing);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
@@ -37,7 +39,7 @@ export function FollowButton({
           : "bg-brand text-white hover:bg-brand-2"
       }`}
     >
-      {following ? "♥ Siguiendo" : "♡ Seguir"}
+      {following ? `♥ ${t("channel.following")}` : `♡ ${t("channel.follow")}`}
     </button>
   );
 }

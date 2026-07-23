@@ -1,10 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { CHANNELS } from "@/lib/streams";
+import { getChannels } from "@/lib/queries";
 import { formatViewers } from "@/lib/format";
 
-export function Sidebar() {
-  const live = [...CHANNELS].sort((a, b) => b.baseViewers - a.baseViewers);
+export async function Sidebar() {
+  const live = await getChannels();
 
   return (
     <aside className="hidden w-60 shrink-0 border-r border-edge bg-ink-2 lg:block">

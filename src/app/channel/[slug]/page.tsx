@@ -2,15 +2,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getChannel, CHANNELS } from "@/lib/streams";
+import { getChannel, isFollowing } from "@/lib/queries";
+import { getSession } from "@/lib/session";
 import { Player } from "@/components/Player";
 import { Chat } from "@/components/Chat";
 import { LiveViewers } from "@/components/LiveViewers";
+import { FollowButton } from "@/components/FollowButton";
 import { formatViewers } from "@/lib/format";
 
-export function generateStaticParams() {
-  return CHANNELS.map((c) => ({ slug: c.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -18,7 +18,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const channel = getChannel(slug);
+  const channel = await getChannel(slug);
   if (!channel) return { title: "Canal no encontrado — StreamLive" };
   return {
     title: `${channel.displayName} — ${channel.title}`,
@@ -32,8 +32,11 @@ export default async function ChannelPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const channel = getChannel(slug);
+  const channel = await getChannel(slug);
   if (!channel) notFound();
+
+  const session = await getSession();
+  const following = session ? await isFollowing(session.userId, slug) : false;
 
   return (
     <div className="flex h-[calc(100vh-3.5rem)] flex-col xl:flex-row">
@@ -77,10 +80,11 @@ export default async function ChannelPage({
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button className="flex items-center gap-1.5 rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-2">
-                ♥ Seguir
-              </button>
-              <button className="rounded-md bg-ink-3 px-4 py-2 text-sm font-semibold text-white transition hover:bg-edge">
+              <FollowButton slug={channel.slug} initialFollowing={following} />
+              <button
+                className="rounded-md bg-ink-3 px-4 py-2 text-sm font-semibold text-white transition hover:bg-edge"
+                title="Requiere integración de pagos (Stripe) — ver MEJORAS.md"
+              >
                 ★ Suscribirse
               </button>
             </div>

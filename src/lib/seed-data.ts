@@ -154,6 +154,3 @@ export const CATEGORIES: Category[] = [
   { slug: "arte", name: "Arte Digital", coverUrl: thumb("cat-art"), viewers: 39600 },
 ];
 
-export function getChannel(slug: string): Channel | undefined {
-  return CHANNELS.find((c) => c.slug === slug);
-}

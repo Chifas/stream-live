@@ -1,12 +1,15 @@
 import Link from "next/link";
 import Image from "next/image";
-import { CHANNELS, CATEGORIES } from "@/lib/streams";
+import { getChannels, getCategories } from "@/lib/queries";
 import { ChannelCard } from "@/components/ChannelCard";
 import { formatViewers } from "@/lib/format";
 
-export default function HomePage() {
-  const featured = CHANNELS[3]; // RaptorFPS
-  const rest = CHANNELS.filter((c) => c.slug !== featured.slug);
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const [channels, categories] = await Promise.all([getChannels(), getCategories()]);
+  const featured = channels[0]; // el de más espectadores
+  const rest = channels.filter((c) => c.slug !== featured.slug);
 
   return (
     <div className="mx-auto max-w-[1600px] p-4 sm:p-6">
@@ -66,7 +69,7 @@ export default function HomePage() {
           </Link>
         </div>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
-          {CATEGORIES.map((cat) => (
+          {categories.map((cat) => (
             <div key={cat.slug} className="group cursor-pointer">
               <Image
                 src={cat.coverUrl}

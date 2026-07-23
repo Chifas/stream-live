@@ -13,8 +13,16 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es">
-      <body className="min-h-screen bg-ink text-[#efeff1]">
+    <html lang="es" suppressHydrationWarning>
+      <head>
+        {/* Aplica el tema antes de pintar para evitar parpadeo. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('sl_theme')||'dark';document.documentElement.dataset.theme=t;}catch(e){}`,
+          }}
+        />
+      </head>
+      <body className="min-h-screen bg-ink text-fg">
         <Navbar />
         <div className="flex">
           <Sidebar />

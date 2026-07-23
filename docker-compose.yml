@@ -1,0 +1,27 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - AUTH_SECRET=${AUTH_SECRET:-cambia-esto-en-produccion-por-un-secreto-largo}
+      - HOST=0.0.0.0
+      - PORT=3000
+    volumes:
+      - stream-data:/app/data
+    restart: unless-stopped
+
+  # --- Servicios opcionales para escalar (ver MEJORAS.md) ---
+  # redis:            # Pub/Sub para el chat con varias instancias
+  #   image: redis:7-alpine
+  #   ports: ["6379:6379"]
+  #
+  # postgres:         # BD relacional en producción (con Drizzle)
+  #   image: postgres:16-alpine
+  #   environment:
+  #     POSTGRES_PASSWORD: postgres
+  #   ports: ["5432:5432"]
+
+volumes:
+  stream-data:

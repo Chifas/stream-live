@@ -1,25 +1,39 @@
 @import "tailwindcss";
 
-/* Tema de la app (Tailwind v4 usa @theme para exponer tokens como utilidades). */
+/* Tokens de tema (Tailwind v4 los expone como utilidades: bg-ink, text-muted…). */
 @theme {
   --color-ink: #0e0e10;
   --color-ink-2: #18181b;
   --color-ink-3: #1f1f23;
   --color-edge: #2a2a2e;
+  --color-fg: #efeff1;
   --color-brand: #9147ff;
   --color-brand-2: #a970ff;
   --color-live: #eb0400;
   --color-muted: #adadb8;
 }
 
+/* Tema claro: se activa con data-theme="light" en <html>. */
+:root[data-theme="light"] {
+  --color-ink: #f7f7f8;
+  --color-ink-2: #ffffff;
+  --color-ink-3: #efeff1;
+  --color-edge: #dcdce1;
+  --color-fg: #0e0e10;
+  --color-muted: #55555d;
+}
+
 :root {
   color-scheme: dark;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
 }
 
 html,
 body {
   background: var(--color-ink);
-  color: #efeff1;
+  color: var(--color-fg);
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -43,4 +57,15 @@ body {
 }
 .live-dot {
   animation: pulse-live 1.6s ease-in-out infinite;
+}
+
+/* Skeletons de carga */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--color-ink-3) 25%, var(--color-edge) 37%, var(--color-ink-3) 63%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s ease infinite;
 }

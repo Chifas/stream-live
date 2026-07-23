@@ -10,6 +10,7 @@ import { parse } from "node:url";
 import next from "next";
 import { WebSocketServer } from "ws";
 import { attachChat } from "./src/server/chat";
+import { readSessionCookie, verifySession } from "./src/lib/auth";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = process.env.HOST ?? "localhost";
@@ -27,10 +28,14 @@ app.prepare().then(() => {
   const wss = new WebSocketServer({ noServer: true });
   attachChat(wss);
 
-  server.on("upgrade", (req, socket, head) => {
+  server.on("upgrade", async (req, socket, head) => {
     const { pathname } = parse(req.url ?? "/", true);
     if (pathname === "/ws") {
+      // La cookie de sesión viaja en el handshake: autenticamos aquí.
+      const token = readSessionCookie(req.headers.cookie);
+      const session = await verifySession(token);
       wss.handleUpgrade(req, socket, head, (ws) => {
+        (ws as unknown as { session: typeof session }).session = session;
         wss.emit("connection", ws, req);
       });
     } else {

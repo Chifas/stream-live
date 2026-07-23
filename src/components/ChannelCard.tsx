@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import type { Channel } from "@/lib/types";
+import type { Channel } from "@/lib/queries";
 import { formatViewers } from "@/lib/format";
 
 export function ChannelCard({ channel }: { channel: Channel }) {

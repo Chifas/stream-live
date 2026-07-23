@@ -22,6 +22,16 @@ export async function getCategories(): Promise<Category[]> {
   return db.select().from(categories).orderBy(desc(categories.viewers));
 }
 
+export async function getChannelByOwner(userId: string): Promise<Channel | undefined> {
+  const db = await getDb();
+  const rows = await db
+    .select()
+    .from(channels)
+    .where(eq(channels.ownerUserId, userId))
+    .limit(1);
+  return rows[0];
+}
+
 /** Búsqueda simple por nombre de canal, título, categoría o etiquetas. */
 export async function searchChannels(query: string): Promise<Channel[]> {
   const q = query.trim().toLowerCase();

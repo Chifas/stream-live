@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS channels (
   id TEXT PRIMARY KEY,
   slug TEXT NOT NULL UNIQUE,
   owner_user_id TEXT,
+  stream_key TEXT,
   display_name TEXT NOT NULL,
   category TEXT NOT NULL,
   title TEXT NOT NULL,
@@ -89,11 +90,24 @@ CREATE TABLE IF NOT EXISTS moderation (
 );
 `;
 
+/** Migraciones ligeras para BDs ya existentes (añadir columnas nuevas). */
+async function migrate(client: Client) {
+  try {
+    await client.execute("ALTER TABLE channels ADD COLUMN stream_key TEXT");
+  } catch {
+    /* la columna ya existe */
+  }
+  await client.execute(
+    "UPDATE channels SET stream_key = slug WHERE stream_key IS NULL OR stream_key = ''",
+  );
+}
+
 /** Inicializa el esquema y siembra datos una sola vez (memoizado). */
 export function getDb(): Promise<LibSQLDatabase<typeof schema>> {
   if (!_ready) {
     _ready = (async () => {
       await raw().executeMultiple(BOOTSTRAP_SQL);
+      await migrate(raw());
       _db = drizzle(raw(), { schema });
       const { seedIfEmpty } = await import("./seed");
       await seedIfEmpty(_db);

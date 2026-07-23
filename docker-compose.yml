@@ -8,8 +8,27 @@ services:
       - AUTH_SECRET=${AUTH_SECRET:-cambia-esto-en-produccion-por-un-secreto-largo}
       - HOST=0.0.0.0
       - PORT=3000
+      # La API la consulta el servidor (red interna de compose)…
+      - MEDIAMTX_API=http://mediamtx:9997
+      # …pero el HLS lo carga el NAVEGADOR, así que debe ser accesible desde el host.
+      - MEDIAMTX_HLS_BASE=http://localhost:8888
+      - MEDIAMTX_RTMP=rtmp://localhost:1935
     volumes:
       - stream-data:/app/data
+    depends_on:
+      - mediamtx
+    restart: unless-stopped
+
+  # Media server open-source: RTMP (ingesta OBS) → HLS (reproducción) + API.
+  mediamtx:
+    image: bluenviron/mediamtx:latest
+    ports:
+      - "1935:1935" # RTMP (OBS emite aquí)
+      - "8888:8888" # HLS (reproducción)
+      - "8889:8889" # WebRTC (opcional)
+      - "9997:9997" # API de estado
+    volumes:
+      - ./mediamtx.yml:/mediamtx.yml:ro
     restart: unless-stopped
 
   # --- Servicios opcionales para escalar (ver MEJORAS.md) ---

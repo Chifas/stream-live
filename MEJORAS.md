@@ -6,6 +6,12 @@ Estado del proyecto y hoja de ruta. Marcado ✅ lo ya implementado en el repo.
 
 ## ✅ Ya implementado
 
+- ✅ **Streaming en directo REAL** con **MediaMTX** (media server open-source, sin
+  credenciales): OBS emite por RTMP → HLS → la web detecta el directo por la API
+  de MediaMTX y lo reproduce; si no hay emisión, cae a un stream HLS de demo.
+  Panel `/studio` con el servidor de ingesta y la clave de emisión del canal.
+- ✅ **Emotes personalizados** en el chat vía **7TV / BTTV / FFZ** (API pública sin
+  auth): los nombres de emote se renderizan como imágenes.
 - ✅ **Base de datos** (SQLite/libSQL + Drizzle ORM): usuarios, canales, categorías,
   seguidores, mensajes y moderación, con bootstrap y seed automáticos.
 - ✅ **Autenticación** real: registro/login (hash **scrypt**), sesión **JWT** en
@@ -29,14 +35,13 @@ Estado del proyecto y hoja de ruta. Marcado ✅ lo ya implementado en el repo.
 
 ## 🔜 Pendiente (requiere infraestructura o TUS credenciales)
 
-### 1. Infraestructura de streaming real
-- [ ] **Media server de ingesta**: [MediaMTX](https://github.com/bluenviron/mediamtx),
-      `nginx-rtmp` o gestionado ([Livepeer](https://livepeer.org/),
-      [Mux](https://mux.dev/), [Cloudflare Stream](https://www.cloudflare.com/products/cloudflare-stream/))
-      para recibir RTMP/SRT desde OBS y transcodificar a HLS/LL-HLS.
-- [ ] **Baja latencia** con LL-HLS o **WebRTC** (WHIP/WHEP).
+### 1. Infraestructura de streaming (mejoras sobre lo ya hecho)
+- [x] ~~Media server de ingesta (MediaMTX, RTMP→HLS)~~ ✅ hecho.
+- [ ] **Baja latencia** con LL-HLS o **WebRTC** (WHIP/WHEP) — MediaMTX ya expone WebRTC.
 - [ ] **ABR** (múltiples calidades) y **grabación/VOD** (repeticiones).
 - [ ] **Miniaturas en vivo** capturadas del stream.
+- [ ] **Emotes nativos de Twitch** (primera parte) — requiere la API de Twitch
+      (client-id/secret); los de 7TV/BTTV/FFZ ya funcionan.
 
 ### 2. Escalado del backend
 - [ ] **Redis Pub/Sub** para el chat con varias instancias tras un balanceador

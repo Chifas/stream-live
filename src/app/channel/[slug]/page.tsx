@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getChannel, isFollowing } from "@/lib/queries";
+import { isPathLive, hlsUrlFor } from "@/lib/mediamtx";
 import { getSession } from "@/lib/session";
 import { Player } from "@/components/Player";
 import { Chat } from "@/components/Chat";
@@ -38,11 +39,15 @@ export default async function ChannelPage({
   const session = await getSession();
   const following = session ? await isFollowing(session.userId, slug) : false;
 
+  // Emisión real (MediaMTX) si hay directo; si no, stream HLS de demo.
+  const liveNow = await isPathLive(channel.streamKey);
+  const videoSrc = liveNow ? hlsUrlFor(channel.streamKey!) : channel.hlsUrl;
+
   return (
     <div className="flex h-[calc(100vh-3.5rem)] flex-col xl:flex-row">
       {/* Columna principal: vídeo + info */}
       <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
-        <Player src={channel.hlsUrl} poster={channel.thumbnailUrl} />
+        <Player src={videoSrc} poster={channel.thumbnailUrl} />
 
         <div className="border-b border-edge px-4 py-4">
           <div className="flex flex-wrap items-start gap-3">
@@ -67,6 +72,18 @@ export default async function ChannelPage({
                   {channel.category}
                 </Link>
                 <LiveViewers base={channel.baseViewers} />
+                <span
+                  className={`rounded px-1.5 py-0.5 text-[11px] font-semibold ${
+                    liveNow ? "bg-live text-white" : "bg-ink-3 text-muted"
+                  }`}
+                  title={
+                    liveNow
+                      ? "Emisión en directo real desde el media server"
+                      : "Reproduciendo un stream HLS de demostración"
+                  }
+                >
+                  {liveNow ? "● EMISIÓN REAL" : "DEMO"}
+                </span>
               </div>
               <div className="mt-2 flex flex-wrap gap-1">
                 {channel.tags.map((t) => (

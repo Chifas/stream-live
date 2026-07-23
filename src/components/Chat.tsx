@@ -32,26 +32,40 @@ const BADGE: Record<Role, { label: string; cls: string } | null> = {
   viewer: null,
 };
 
-function MessageText({ text, me }: { text: string; me: string }) {
-  const parts = useMemo(() => text.split(/(@\w+)/g), [text]);
+type EmoteMap = Record<string, string>;
+
+function MessageText({ text, me, emotes }: { text: string; me: string; emotes: EmoteMap }) {
+  // Separamos por espacios (conservándolos) para detectar emotes y menciones.
+  const tokens = useMemo(() => text.split(/(\s+)/), [text]);
   return (
     <>
-      {parts.map((p, i) =>
-        p.startsWith("@") ? (
-          <span
-            key={i}
-            className={`rounded px-0.5 ${
-              p.slice(1).toLowerCase() === me.toLowerCase()
-                ? "bg-brand/40 text-white"
-                : "text-brand-2"
-            }`}
-          >
-            {p}
-          </span>
-        ) : (
-          <span key={i}>{p}</span>
-        ),
-      )}
+      {tokens.map((tok, i) => {
+        if (emotes[tok]) {
+          return (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={i}
+              src={emotes[tok]}
+              alt={tok}
+              title={tok}
+              className="mx-0.5 inline-block h-6 w-auto align-middle"
+              loading="lazy"
+            />
+          );
+        }
+        if (tok.startsWith("@") && tok.length > 1) {
+          const mentioned = tok.slice(1).toLowerCase() === me.toLowerCase();
+          return (
+            <span
+              key={i}
+              className={`rounded px-0.5 ${mentioned ? "bg-brand/40 text-white" : "text-brand-2"}`}
+            >
+              {tok}
+            </span>
+          );
+        }
+        return <span key={i}>{tok}</span>;
+      })}
     </>
   );
 }
@@ -65,6 +79,21 @@ export function Chat({ channel }: { channel: string }) {
     role: "viewer",
     canModerate: false,
   });
+  const [emotes, setEmotes] = useState<EmoteMap>({});
+
+  // Emotes personalizados globales (7TV/BTTV/FFZ), cargados una vez.
+  useEffect(() => {
+    let active = true;
+    fetch("/api/emotes")
+      .then((r) => (r.ok ? r.json() : {}))
+      .then((m: EmoteMap) => {
+        if (active) setEmotes(m);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const wsRef = useRef<WebSocket | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -199,12 +228,12 @@ export function Chat({ channel }: { channel: string }) {
               {it.msg.action ? (
                 <span className="italic text-muted">
                   {" "}
-                  <MessageText text={it.msg.text} me={me.username} />
+                  <MessageText text={it.msg.text} me={me.username} emotes={emotes} />
                 </span>
               ) : (
                 <>
                   <span className="text-muted">: </span>
-                  <MessageText text={it.msg.text} me={me.username} />
+                  <MessageText text={it.msg.text} me={me.username} emotes={emotes} />
                 </>
               )}
             </p>

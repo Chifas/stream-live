@@ -54,11 +54,15 @@ npm run format     # Prettier
 
 - **Directos** con hero destacado, grid y categorías (datos en BD).
 - **Reproductor HLS** con selector de calidad, Picture-in-Picture y pantalla completa.
+- **Emisión en directo real** con **MediaMTX** + OBS (ver más abajo), con fallback
+  automático a un stream de demo cuando no hay emisión.
 - **Chat en tiempo real** con:
   - Identidad autenticada o invitado (leída de la cookie en el handshake WS).
   - Persistencia e historial en base de datos.
   - **Moderación** para admins y dueños del canal: `/timeout`, `/ban`, `/unban`, `/slow`, `/clear`.
   - `/me`, menciones (`@usuario`), badges por rol, **rate-limit** y **modo lento**.
+  - **Emotes personalizados** (7TV/BTTV/FFZ): escribe el nombre del emote y se
+    renderiza como imagen.
   - **Reconexión automática** con backoff exponencial.
 - **Autenticación** real (registro/login, sesión JWT, roles).
 - **Seguir** canales (persistente) + página **Siguiendo**.
@@ -78,13 +82,29 @@ src/
   lib/                    queries, auth/session, users, follows, password, format, tipos
 ```
 
+## 📡 Emitir en directo de verdad (OBS + MediaMTX)
+
+1. Levanta el media server (incluido en `docker-compose.yml`):
+   ```bash
+   docker compose up --build
+   ```
+2. En **OBS** → Ajustes → Emisión → Servicio **Personalizado**:
+   - **Servidor:** `rtmp://localhost:1935`
+   - **Clave:** el `streamKey` del canal (para la demo, `nova_plays`).
+   - En `/studio`, logueado como `streamer`, tienes estos datos listos para copiar.
+3. Pulsa **Iniciar transmisión** y abre `/channel/nova_plays`: el reproductor pasa
+   solo de la demo a tu **emisión real** (badge «● EMISIÓN REAL»).
+
+> Sin cuentas ni claves externas: MediaMTX y OBS son gratuitos y locales.
+
 ## 🐳 Docker
 
 ```bash
 docker compose up --build
 ```
 
-Levanta la app en el puerto 3000 con un volumen persistente para la BD.
+Levanta la app (puerto 3000) **y MediaMTX** (RTMP 1935 · HLS 8888 · API 9997),
+con un volumen persistente para la BD.
 
 ## 📌 Mejoras
 

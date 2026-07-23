@@ -16,6 +16,8 @@ export const channels = sqliteTable("channels", {
   id: text("id").primaryKey(),
   slug: text("slug").notNull().unique(),
   ownerUserId: text("owner_user_id"),
+  /** Clave de emisión para el media server (RTMP/HLS). */
+  streamKey: text("stream_key"),
   displayName: text("display_name").notNull(),
   category: text("category").notNull(),
   title: text("title").notNull(),

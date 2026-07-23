@@ -1,0 +1,25 @@
+# Configuración de MediaMTX para StreamLive (desarrollo local, sin auth).
+# Recibe RTMP desde OBS y publica HLS + una API de estado.
+
+# Ingesta RTMP (OBS emite aquí).
+rtmp: yes
+rtmpAddress: :1935
+
+# Salida HLS (la reproduce la web).
+hls: yes
+hlsAddress: :8888
+hlsVariant: mpegts
+hlsAlwaysRemux: yes
+hlsAllowOrigin: "*"
+
+# API de estado (la app consulta si un path está en directo).
+api: yes
+apiAddress: :9997
+
+# WebRTC opcional (baja latencia) — expuesto por si quieres experimentar.
+webrtc: yes
+webrtcAddress: :8889
+
+# Cualquier nombre de path es válido; el streamKey del canal define la ruta.
+paths:
+  all_others:

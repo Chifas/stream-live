@@ -61,6 +61,7 @@ export async function seedIfEmpty(db: LibSQLDatabase<typeof schema>) {
       slug: c.slug,
       // El primer canal pertenece al usuario "streamer" (para demo de moderación).
       ownerUserId: c.slug === "nova_plays" ? creatorId : null,
+      streamKey: c.slug,
       displayName: c.displayName,
       category: c.category,
       title: c.title,

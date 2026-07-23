@@ -64,6 +64,22 @@ export const messages = sqliteTable("messages", {
   ts: integer("ts").notNull(),
 });
 
+/** Moderadores por canal (usuarios registrados con permisos en un canal). */
+export const moderators = sqliteTable(
+  "moderators",
+  {
+    id: text("id").primaryKey(),
+    channelSlug: text("channel_slug").notNull(),
+    userId: text("user_id").notNull(),
+    username: text("username").notNull(),
+    addedBy: text("added_by").notNull(),
+    createdAt: integer("created_at").notNull(),
+  },
+  (t) => ({
+    uniq: uniqueIndex("moderators_channel_user").on(t.channelSlug, t.userId),
+  }),
+);
+
 /** Sanciones de moderación por canal (timeout temporal o ban permanente). */
 export const moderation = sqliteTable("moderation", {
   id: text("id").primaryKey(),

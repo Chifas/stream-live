@@ -13,10 +13,20 @@ services:
       # …pero el HLS lo carga el NAVEGADOR, así que debe ser accesible desde el host.
       - MEDIAMTX_HLS_BASE=http://localhost:8888
       - MEDIAMTX_RTMP=rtmp://localhost:1935
+      # Chat con Redis pub/sub (permite escalar a varias instancias).
+      - REDIS_URL=redis://redis:6379
     volumes:
       - stream-data:/app/data
     depends_on:
       - mediamtx
+      - redis
+    restart: unless-stopped
+
+  # Pub/Sub para el chat entre instancias.
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
     restart: unless-stopped
 
   # Media server open-source: RTMP (ingesta OBS) → HLS (reproducción) + API.
@@ -31,11 +41,7 @@ services:
       - ./mediamtx.yml:/mediamtx.yml:ro
     restart: unless-stopped
 
-  # --- Servicios opcionales para escalar (ver MEJORAS.md) ---
-  # redis:            # Pub/Sub para el chat con varias instancias
-  #   image: redis:7-alpine
-  #   ports: ["6379:6379"]
-  #
+  # --- Servicio opcional para producción (ver MEJORAS.md) ---
   # postgres:         # BD relacional en producción (con Drizzle)
   #   image: postgres:16-alpine
   #   environment:

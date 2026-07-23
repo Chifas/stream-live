@@ -11,6 +11,7 @@ import next from "next";
 import { WebSocketServer } from "ws";
 import { attachChat } from "./src/server/chat";
 import { readSessionCookie, verifySession } from "./src/lib/auth";
+import { logger } from "./src/lib/logger";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = process.env.HOST ?? "localhost";
@@ -44,7 +45,7 @@ app.prepare().then(() => {
   });
 
   server.listen(port, () => {
-    console.log(`\n  ▶  Stream Live listo en http://${hostname}:${port}`);
-    console.log(`  💬  Chat WebSocket en ws://${hostname}:${port}/ws\n`);
+    logger.info(`Stream Live listo en http://${hostname}:${port}`);
+    logger.info(`Chat WebSocket en ws://${hostname}:${port}/ws`);
   });
 });

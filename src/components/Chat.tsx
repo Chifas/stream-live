@@ -222,6 +222,11 @@ export function Chat({ channel }: { channel: string }) {
                   {BADGE[it.msg.role]!.label}
                 </span>
               )}
+              {it.msg.mod && !BADGE[it.msg.role] && (
+                <span className="mr-1 rounded bg-green-600 px-1 py-0.5 text-[10px] font-bold text-white">
+                  MOD
+                </span>
+              )}
               <span className="font-semibold" style={{ color: it.msg.color }}>
                 {it.msg.user}
               </span>
@@ -244,7 +249,7 @@ export function Chat({ channel }: { channel: string }) {
       {me.canModerate && (
         <p className="border-t border-edge px-3 py-1.5 text-[11px] text-muted">
           🛡️ Moderación: <code>/timeout usuario 60</code> · <code>/ban</code> ·{" "}
-          <code>/slow 5</code> · <code>/clear</code>
+          <code>/slow 5</code> · <code>/clear</code> · <code>/mod usuario</code>
         </p>
       )}
 

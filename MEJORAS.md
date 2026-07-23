@@ -19,7 +19,8 @@ Estado del proyecto y hoja de ruta. Marcado ✅ lo ya implementado en el repo.
 - ✅ **Chat en tiempo real avanzado**:
   - ✅ Persistencia e historial en BD.
   - ✅ Identidad autenticada (cookie leída en el handshake WS) o invitado.
-  - ✅ Moderación: `/timeout`, `/ban`, `/unban`, `/slow`, `/clear` (admins y dueños).
+  - ✅ Moderación: `/timeout`, `/ban`, `/unban`, `/slow`, `/clear` (admins, dueños y mods).
+  - ✅ **Moderadores por canal**: `/mod` y `/unmod` (dueño/admin), badge **MOD**.
   - ✅ `/me`, menciones `@usuario`, badges por rol.
   - ✅ **Rate-limiting** anti-spam y **modo lento**.
   - ✅ **Reconexión** con backoff exponencial.
@@ -28,8 +29,11 @@ Estado del proyecto y hoja de ruta. Marcado ✅ lo ya implementado en el repo.
 - ✅ **Reproductor**: selector de calidad, Picture-in-Picture, pantalla completa.
 - ✅ **Tema claro/oscuro**, **skeletons** de carga, **error boundaries**.
 - ✅ **SEO / Open Graph** dinámico por canal (imagen OG generada).
+- ✅ **Escalado del chat**: bus de eventos con **Redis pub/sub** (o memoria por
+  defecto) para propagar mensajes entre varias instancias.
+- ✅ **Logging estructurado** local (niveles; JSON en producción).
 - ✅ **Tests** (Vitest), **ESLint**, **Prettier**, **CI** (GitHub Actions).
-- ✅ **Docker** + **docker-compose** + `.env.example`.
+- ✅ **Docker** + **docker-compose** (app + MediaMTX + Redis) + `.env.example`.
 
 ---
 
@@ -44,8 +48,9 @@ Estado del proyecto y hoja de ruta. Marcado ✅ lo ya implementado en el repo.
       (client-id/secret); los de 7TV/BTTV/FFZ ya funcionan.
 
 ### 2. Escalado del backend
-- [ ] **Redis Pub/Sub** para el chat con varias instancias tras un balanceador
-      (hoy el estado de las salas es en memoria por instancia).
+- [x] ~~Redis Pub/Sub para el chat multi-instancia~~ ✅ hecho (contador de
+      espectadores todavía local por instancia).
+- [ ] Contador de espectadores agregado entre instancias (vía Redis).
 - [ ] Migrar la BD a **PostgreSQL** en producción (el esquema Drizzle ya es portable).
 - [ ] Caché de listados (ISR / `revalidate`).
 
@@ -58,8 +63,8 @@ Estado del proyecto y hoja de ruta. Marcado ✅ lo ya implementado en el repo.
 - [ ] Anuncios opcionales.
 
 ### 5. Chat / moderación (siguiente nivel)
-- [ ] Lista de **moderadores** por canal (más allá de dueño/admin).
-- [ ] **Emotes** personalizados y autocompletado.
+- [x] ~~Lista de moderadores por canal~~ ✅ hecho (`/mod`, `/unmod`).
+- [ ] **Autocompletado** de emotes al escribir.
 - [ ] Comandos avanzados: encuestas, sorteos, modo solo-seguidores.
 
 ### 6. Descubrimiento y social

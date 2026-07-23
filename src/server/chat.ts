@@ -9,19 +9,24 @@ import {
   loadModeration,
   saveSanction,
   removeSanction,
+  loadModerators,
+  addModerator,
+  removeModerator,
   type Sanction,
 } from "./chat-db";
+import { createBus, type Bus } from "./bus";
+import { logger } from "@/lib/logger";
 
 /**
  * Servidor de chat en directo. Cada canal es una "sala". Soporta:
  *  - Identidad autenticada (leída de la cookie de sesión) o invitado.
  *  - Persistencia de mensajes e historial en la base de datos.
- *  - Moderación por canal (timeout/ban) para admins y dueños del canal.
- *  - Comandos: /me, /timeout, /ban, /unban, /slow, /clear.
+ *  - Moderación por canal (timeout/ban) para admins, dueños y moderadores.
+ *  - Comandos: /me, /timeout, /ban, /unban, /slow, /clear, /mod, /unmod.
  *  - Rate-limiting anti-spam y modo lento.
  *
- * Para escalar a varias instancias se sustituiría el estado en memoria por
- * Redis pub/sub (ver MEJORAS.md).
+ * Los mensajes se propagan por un bus (in-memory o Redis) para poder escalar a
+ * varias instancias. El contador de espectadores es local a cada instancia.
  */
 
 interface Client extends WebSocket {
@@ -32,14 +37,25 @@ interface Client extends WebSocket {
   role?: Role;
   userId?: string | null;
   canModerate?: boolean;
+  isOwner?: boolean;
+  isChannelMod?: boolean;
   msgTimes?: number[];
 }
 
 const rooms = new Map<string, Set<Client>>();
 const owners = new Map<string, string | null>();
+const mods = new Map<string, Set<string>>();
 const sanctions = new Map<string, Map<string, Sanction>>();
 const slowMode = new Map<string, number>();
 const lastUserMsg = new Map<string, number>();
+
+// Bus de eventos (in-memory o Redis). Entrega los eventos publicados a las salas
+// locales de esta instancia.
+let bus: Bus;
+createBus().then((b) => {
+  bus = b;
+  bus.onMessage(deliverLocal);
+});
 
 const MAX_MESSAGE_LENGTH = 300;
 const RATE_WINDOW_MS = 10_000;
@@ -66,10 +82,17 @@ function systemError(client: Client, text: string) {
   send(client, { type: "system", text, level: "error" });
 }
 
-function broadcast(channel: string, event: ServerEvent) {
+/** Entrega un evento a las conexiones locales de esta instancia. */
+function deliverLocal(channel: string, event: ServerEvent) {
   const room = rooms.get(channel);
   if (!room) return;
   for (const client of room) send(client, event);
+}
+
+/** Publica un evento por el bus (Redis o memoria) → llega a todas las instancias. */
+function publish(channel: string, event: ServerEvent) {
+  if (bus) bus.publish(channel, event);
+  else deliverLocal(channel, event);
 }
 
 function viewerCount(channel: string): number {
@@ -104,6 +127,7 @@ async function join(client: Client, channel: string, guestName?: string) {
 
   // Carga perezosa de metadatos de moderación por canal.
   if (!owners.has(channel)) owners.set(channel, await getChannelOwner(channel));
+  if (!mods.has(channel)) mods.set(channel, await loadModerators(channel));
   if (!sanctions.has(channel)) {
     const map = new Map<string, Sanction>();
     for (const s of await loadModeration(channel)) map.set(s.targetUsername, s);
@@ -111,8 +135,11 @@ async function join(client: Client, channel: string, guestName?: string) {
   }
 
   const owner = owners.get(channel) ?? null;
-  client.canModerate =
-    client.role === "admin" || (!!client.userId && client.userId === owner);
+  const isOwner = !!client.userId && client.userId === owner;
+  const isChannelMod = !!client.userId && (mods.get(channel)?.has(client.userId) ?? false);
+  client.isOwner = isOwner;
+  client.isChannelMod = isChannelMod;
+  client.canModerate = client.role === "admin" || isOwner || isChannelMod;
 
   send(client, {
     type: "welcome",
@@ -121,7 +148,7 @@ async function join(client: Client, channel: string, guestName?: string) {
     canModerate: !!client.canModerate,
   });
   send(client, { type: "history", messages: await loadHistory(channel) });
-  broadcast(channel, { type: "viewers", count: viewerCount(channel) });
+  deliverLocal(channel, { type: "viewers", count: viewerCount(channel) });
 }
 
 function leave(client: Client) {
@@ -131,7 +158,7 @@ function leave(client: Client) {
   if (room) {
     room.delete(client);
     if (room.size === 0) rooms.delete(channel);
-    else broadcast(channel, { type: "viewers", count: viewerCount(channel) });
+    else deliverLocal(channel, { type: "viewers", count: viewerCount(channel) });
   }
   client.channel = undefined;
 }
@@ -169,6 +196,8 @@ function makeMessage(client: Client, text: string, action = false): ChatMessage 
     role: client.role!,
     ts: Date.now(),
     action,
+    // Badge MOD para moderadores de canal cuyo rol global es viewer.
+    mod: client.isChannelMod && client.role === "viewer",
   };
 }
 
@@ -214,7 +243,7 @@ async function handleChat(client: Client, rawText: string) {
   }
 
   const message = makeMessage(client, text);
-  broadcast(channel, { type: "chat", message });
+  publish(channel, { type: "chat", message });
   void saveMessage(channel, message, client.userId ?? null);
 }
 
@@ -226,8 +255,36 @@ async function handleCommand(client: Client, channel: string, text: string) {
     if (!body) return;
     if (rateLimited(client)) return;
     const message = makeMessage(client, body, true);
-    broadcast(channel, { type: "chat", message });
+    publish(channel, { type: "chat", message });
     void saveMessage(channel, message, client.userId ?? null);
+    return;
+  }
+
+  // Gestión de moderadores: solo dueño del canal o admin.
+  if (cmd === "mod" || cmd === "unmod") {
+    if (!(client.isOwner || client.role === "admin")) {
+      systemError(client, "Solo el dueño del canal puede gestionar moderadores.");
+      return;
+    }
+    const target = sanitizeName(args[0] ?? "");
+    if (!target) return systemError(client, `Uso: /${cmd} <usuario>`);
+    const set = mods.get(channel) ?? new Set<string>();
+    if (cmd === "mod") {
+      const userId = await addModerator(channel, target, client.user!);
+      if (!userId) return systemError(client, `No existe el usuario ${target}.`);
+      set.add(userId);
+      mods.set(channel, set);
+      publish(channel, { type: "system", text: `🛡️ ${target} ahora es moderador (por ${client.user}).` });
+    } else {
+      const userId = await removeModerator(channel, target);
+      if (userId) set.delete(userId);
+      publish(channel, { type: "system", text: `${target} ya no es moderador.` });
+    }
+    // Recalcula permisos en caliente para las conexiones locales del canal.
+    for (const c of rooms.get(channel) ?? []) {
+      c.isChannelMod = !!c.userId && set.has(c.userId);
+      c.canModerate = c.role === "admin" || !!c.isOwner || c.isChannelMod;
+    }
     return;
   }
 
@@ -246,7 +303,7 @@ async function handleCommand(client: Client, channel: string, text: string) {
         const s: Sanction = { targetUsername: target, type: "timeout", untilTs: Date.now() + secs * 1000 };
         map.set(target, s);
         void saveSanction(channel, s, client.user!);
-        broadcast(channel, { type: "system", text: `⏳ ${target} silenciado ${secs}s por ${client.user}.` });
+        publish(channel, { type: "system", text: `⏳ ${target} silenciado ${secs}s por ${client.user}.` });
         return;
       }
       case "ban": {
@@ -255,7 +312,7 @@ async function handleCommand(client: Client, channel: string, text: string) {
         const s: Sanction = { targetUsername: target, type: "ban", untilTs: null };
         map.set(target, s);
         void saveSanction(channel, s, client.user!);
-        broadcast(channel, { type: "system", text: `🔨 ${target} ha sido baneado por ${client.user}.` });
+        publish(channel, { type: "system", text: `🔨 ${target} ha sido baneado por ${client.user}.` });
         return;
       }
       case "unban": {
@@ -263,13 +320,13 @@ async function handleCommand(client: Client, channel: string, text: string) {
         if (!target) return systemError(client, "Uso: /unban <usuario>");
         map.delete(target);
         void removeSanction(channel, target);
-        broadcast(channel, { type: "system", text: `✅ ${target} ha sido readmitido.` });
+        publish(channel, { type: "system", text: `✅ ${target} ha sido readmitido.` });
         return;
       }
       case "slow": {
         const secs = Math.max(0, Math.min(300, Number(args[0]) || 0));
         slowMode.set(channel, secs);
-        broadcast(channel, {
+        publish(channel, {
           type: "system",
           text: secs > 0 ? `🐌 Modo lento: 1 mensaje cada ${secs}s.` : "Modo lento desactivado.",
         });
@@ -277,8 +334,8 @@ async function handleCommand(client: Client, channel: string, text: string) {
       }
       case "clear": {
         void clearMessages(channel);
-        broadcast(channel, { type: "clear" });
-        broadcast(channel, { type: "system", text: `🧹 ${client.user} ha limpiado el chat.` });
+        publish(channel, { type: "clear" });
+        publish(channel, { type: "system", text: `🧹 ${client.user} ha limpiado el chat.` });
         return;
       }
     }
@@ -300,6 +357,9 @@ export function attachChat(wss: WebSocketServer) {
       else if (event.type === "chat") void handleChat(ws, event.text);
     });
     ws.on("close", () => leave(ws));
-    ws.on("error", () => leave(ws));
+    ws.on("error", (err) => {
+      logger.warn("Error en conexión de chat", { error: String(err) });
+      leave(ws);
+    });
   });
 }

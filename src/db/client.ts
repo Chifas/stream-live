@@ -88,6 +88,15 @@ CREATE TABLE IF NOT EXISTS moderation (
   by_username TEXT NOT NULL,
   created_at INTEGER NOT NULL
 );
+CREATE TABLE IF NOT EXISTS moderators (
+  id TEXT PRIMARY KEY,
+  channel_slug TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  username TEXT NOT NULL,
+  added_by TEXT NOT NULL,
+  created_at INTEGER NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS moderators_channel_user ON moderators (channel_slug, user_id);
 `;
 
 /** Migraciones ligeras para BDs ya existentes (añadir columnas nuevas). */

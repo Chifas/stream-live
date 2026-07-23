@@ -32,6 +32,8 @@ export interface ChatMessage {
   ts: number;
   /** true si es un mensaje de acción (`/me`) */
   action?: boolean;
+  /** true si el autor es moderador del canal (aunque su rol global sea viewer) */
+  mod?: boolean;
 }
 
 /** Mensajes que el cliente envía al servidor de chat */

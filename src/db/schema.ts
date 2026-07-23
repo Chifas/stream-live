@@ -30,6 +30,10 @@ export const channels = sqliteTable("channels", {
   isLive: integer("is_live", { mode: "boolean" }).notNull().default(true),
   followers: integer("followers").notNull().default(0),
   about: text("about").notNull(),
+  // Ajustes de moderación configurables desde el panel del creador.
+  slowModeDefault: integer("slow_mode_default").notNull().default(0),
+  followersOnly: integer("followers_only", { mode: "boolean" }).notNull().default(false),
+  bannedWords: text("banned_words", { mode: "json" }).$type<string[]>(),
 });
 
 export const categories = sqliteTable("categories", {

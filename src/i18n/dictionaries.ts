@@ -54,6 +54,8 @@ const es: Messages = {
   "theme.toLight": "Cambiar a tema claro",
   "theme.toDark": "Cambiar a tema oscuro",
   "locale.switch": "Idioma",
+  "menu.dashboard": "Mi panel",
+  "menu.studio": "Studio (OBS)",
 };
 
 const en: Messages = {
@@ -104,6 +106,8 @@ const en: Messages = {
   "theme.toLight": "Switch to light theme",
   "theme.toDark": "Switch to dark theme",
   "locale.switch": "Language",
+  "menu.dashboard": "My dashboard",
+  "menu.studio": "Studio (OBS)",
 };
 
 export const DICTIONARIES: Record<Locale, Messages> = { es, en };

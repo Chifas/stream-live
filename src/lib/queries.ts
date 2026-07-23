@@ -1,7 +1,7 @@
 import "server-only";
 import { and, desc, eq, inArray, like, or } from "drizzle-orm";
 import { getDb } from "@/db/client";
-import { channels, categories, follows } from "@/db/schema";
+import { channels, categories, follows, moderators } from "@/db/schema";
 import type { Channel, Category } from "@/db/schema";
 
 export type { Channel, Category };
@@ -61,6 +61,15 @@ export async function getFollowedChannels(userId: string): Promise<Channel[]> {
   const slugs = rows.map((r) => r.slug);
   if (slugs.length === 0) return [];
   return db.select().from(channels).where(inArray(channels.slug, slugs));
+}
+
+export async function getModeratorUsernames(slug: string): Promise<string[]> {
+  const db = await getDb();
+  const rows = await db
+    .select({ username: moderators.username })
+    .from(moderators)
+    .where(eq(moderators.channelSlug, slug));
+  return rows.map((r) => r.username);
 }
 
 export async function isFollowing(userId: string, slug: string): Promise<boolean> {

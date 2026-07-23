@@ -12,6 +12,10 @@ Estado del proyecto y hoja de ruta. Marcado ✅ lo ya implementado en el repo.
   Panel `/studio` con el servidor de ingesta y la clave de emisión del canal.
 - ✅ **Emotes personalizados** en el chat vía **7TV / BTTV / FFZ** (API pública sin
   auth): los nombres de emote se renderizan como imágenes.
+- ✅ **Panel del creador** (`/dashboard`, desde el menú de usuario): editar canal
+  (título, categoría, idioma, etiquetas, descripción), **moderación automática**
+  (modo lento por defecto, solo-seguidores, palabras prohibidas censuradas),
+  gestión de **moderadores** y datos de OBS. Crear canal si no tienes uno.
 - ✅ **Grabación / VOD**: MediaMTX graba las emisiones; página de repeticiones por
   canal con reproductor (se activa al haber grabaciones reales).
 - ✅ **Accesibilidad**: foco visible, skip-link, `aria-label` en navegación y

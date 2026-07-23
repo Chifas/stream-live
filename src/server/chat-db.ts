@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { and, asc, eq } from "drizzle-orm";
 import { getDb } from "@/db/client";
-import { messages, moderation, moderators, channels, users } from "@/db/schema";
+import { messages, moderation, moderators, channels, users, follows } from "@/db/schema";
 import type { ChatMessage, Role } from "@/lib/types";
 
 const HISTORY_LIMIT = 50;
@@ -14,6 +14,44 @@ export async function getChannelOwner(slug: string): Promise<string | null> {
     .where(eq(channels.slug, slug))
     .limit(1);
   return rows[0]?.owner ?? null;
+}
+
+export interface ChannelSettings {
+  ownerUserId: string | null;
+  slowModeDefault: number;
+  followersOnly: boolean;
+  bannedWords: string[];
+}
+
+export async function getChannelSettings(slug: string): Promise<ChannelSettings> {
+  const db = await getDb();
+  const rows = await db
+    .select({
+      ownerUserId: channels.ownerUserId,
+      slowModeDefault: channels.slowModeDefault,
+      followersOnly: channels.followersOnly,
+      bannedWords: channels.bannedWords,
+    })
+    .from(channels)
+    .where(eq(channels.slug, slug))
+    .limit(1);
+  const r = rows[0];
+  return {
+    ownerUserId: r?.ownerUserId ?? null,
+    slowModeDefault: r?.slowModeDefault ?? 0,
+    followersOnly: !!r?.followersOnly,
+    bannedWords: r?.bannedWords ?? [],
+  };
+}
+
+export async function isFollower(userId: string, slug: string): Promise<boolean> {
+  const db = await getDb();
+  const rows = await db
+    .select({ id: follows.id })
+    .from(follows)
+    .where(and(eq(follows.userId, userId), eq(follows.channelSlug, slug)))
+    .limit(1);
+  return rows.length > 0;
 }
 
 export async function loadHistory(slug: string): Promise<ChatMessage[]> {

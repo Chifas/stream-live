@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { getSession } from "@/lib/session";
-import { logoutAction } from "@/app/actions/auth";
 import { getT } from "@/i18n/server";
 import { SearchBar } from "./SearchBar";
 import { ThemeToggle } from "./ThemeToggle";
 import { LocaleToggle } from "./LocaleToggle";
+import { UserMenu } from "./UserMenu";
 
 export async function Navbar() {
   const session = await getSession();
@@ -40,21 +40,7 @@ export async function Navbar() {
           {t("nav.golive")}
         </Link>
         {session ? (
-          <div className="flex items-center gap-2">
-            <span
-              className="grid h-8 w-8 place-items-center rounded-full text-sm font-bold text-white"
-              style={{ backgroundColor: session.color }}
-              title={`${session.username} · ${session.role}`}
-            >
-              {session.username.charAt(0).toUpperCase()}
-            </span>
-            <span className="hidden text-sm font-semibold md:block">{session.username}</span>
-            <form action={logoutAction}>
-              <button className="rounded-md bg-ink-3 px-3 py-1.5 text-sm text-muted transition hover:text-white">
-                {t("nav.logout")}
-              </button>
-            </form>
-          </div>
+          <UserMenu username={session.username} color={session.color} role={session.role} />
         ) : (
           <Link
             href="/login"

@@ -2,7 +2,7 @@ import type { WebSocket, WebSocketServer } from "ws";
 import type { ChatMessage, ClientEvent, Role, ServerEvent } from "@/lib/types";
 import type { SessionUser } from "@/lib/auth";
 import {
-  getChannelOwner,
+  getChannelSettings,
   loadHistory,
   saveMessage,
   clearMessages,
@@ -12,6 +12,7 @@ import {
   loadModerators,
   addModerator,
   removeModerator,
+  isFollower,
   type Sanction,
 } from "./chat-db";
 import { createBus, type Bus } from "./bus";
@@ -45,9 +46,23 @@ interface Client extends WebSocket {
 const rooms = new Map<string, Set<Client>>();
 const owners = new Map<string, string | null>();
 const mods = new Map<string, Set<string>>();
+const followersOnly = new Map<string, boolean>();
+const bannedWords = new Map<string, string[]>();
 const sanctions = new Map<string, Map<string, Sanction>>();
 const slowMode = new Map<string, number>();
 const lastUserMsg = new Map<string, number>();
+
+function escapeRegex(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function censor(text: string, words: string[]): string {
+  let out = text;
+  for (const w of words) {
+    if (w) out = out.replace(new RegExp(escapeRegex(w), "gi"), "***");
+  }
+  return out;
+}
 
 // Bus de eventos (in-memory o Redis). Entrega los eventos publicados a las salas
 // locales de esta instancia.
@@ -125,9 +140,15 @@ async function join(client: Client, channel: string, guestName?: string) {
   if (!rooms.has(channel)) rooms.set(channel, new Set());
   rooms.get(channel)!.add(client);
 
-  // Carga perezosa de metadatos de moderación por canal.
-  if (!owners.has(channel)) owners.set(channel, await getChannelOwner(channel));
-  if (!mods.has(channel)) mods.set(channel, await loadModerators(channel));
+  // Recarga ajustes y moderadores en cada conexión, para que los cambios hechos
+  // desde el panel del creador se apliquen sin reiniciar el servidor.
+  const settings = await getChannelSettings(channel);
+  owners.set(channel, settings.ownerUserId);
+  followersOnly.set(channel, settings.followersOnly);
+  bannedWords.set(channel, settings.bannedWords);
+  // Respeta un modo lento activado en caliente por comando; si no, usa el de ajustes.
+  if (!slowMode.has(channel)) slowMode.set(channel, settings.slowModeDefault);
+  mods.set(channel, await loadModerators(channel));
   if (!sanctions.has(channel)) {
     const map = new Map<string, Sanction>();
     for (const s of await loadModeration(channel)) map.set(s.targetUsername, s);
@@ -224,6 +245,15 @@ async function handleChat(client: Client, rawText: string) {
     return;
   }
 
+  // Modo solo-seguidores (no aplica a moderadores).
+  if (followersOnly.get(channel) && !client.canModerate) {
+    const ok = client.userId ? await isFollower(client.userId, channel) : false;
+    if (!ok) {
+      systemError(client, "Solo los seguidores pueden escribir en este chat.");
+      return;
+    }
+  }
+
   if (rateLimited(client)) {
     systemError(client, "Vas demasiado rápido, espera un momento.");
     return;
@@ -242,7 +272,8 @@ async function handleChat(client: Client, rawText: string) {
     lastUserMsg.set(key, Date.now());
   }
 
-  const message = makeMessage(client, text);
+  const clean = censor(text, bannedWords.get(channel) ?? []);
+  const message = makeMessage(client, clean);
   publish(channel, { type: "chat", message });
   void saveMessage(channel, message, client.userId ?? null);
 }

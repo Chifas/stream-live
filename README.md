@@ -65,6 +65,8 @@ npm run format     # Prettier
     renderiza como imagen.
   - **Reconexión automática** con backoff exponencial.
 - **Autenticación** real (registro/login, sesión JWT, roles).
+- **Panel del creador** (`/dashboard`): ajustes del canal, moderación automática
+  (modo lento, solo-seguidores, palabras prohibidas), moderadores y datos de OBS.
 - **Seguir** canales (persistente) + página **Siguiendo**.
 - **Búsqueda** real de canales/categorías.
 - **Tema claro/oscuro**, skeletons de carga, error boundaries, **SEO/Open Graph** dinámico por canal.

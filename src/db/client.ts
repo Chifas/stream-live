@@ -52,7 +52,10 @@ CREATE TABLE IF NOT EXISTS channels (
   base_viewers INTEGER NOT NULL DEFAULT 0,
   is_live INTEGER NOT NULL DEFAULT 1,
   followers INTEGER NOT NULL DEFAULT 0,
-  about TEXT NOT NULL
+  about TEXT NOT NULL,
+  slow_mode_default INTEGER NOT NULL DEFAULT 0,
+  followers_only INTEGER NOT NULL DEFAULT 0,
+  banned_words TEXT
 );
 CREATE TABLE IF NOT EXISTS categories (
   id TEXT PRIMARY KEY,
@@ -101,11 +104,17 @@ CREATE UNIQUE INDEX IF NOT EXISTS moderators_channel_user ON moderators (channel
 
 /** Migraciones ligeras para BDs ya existentes (añadir columnas nuevas). */
 async function migrate(client: Client) {
-  try {
-    await client.execute("ALTER TABLE channels ADD COLUMN stream_key TEXT");
-  } catch {
-    /* la columna ya existe */
-  }
+  const addColumn = async (sql: string) => {
+    try {
+      await client.execute(sql);
+    } catch {
+      /* la columna ya existe */
+    }
+  };
+  await addColumn("ALTER TABLE channels ADD COLUMN stream_key TEXT");
+  await addColumn("ALTER TABLE channels ADD COLUMN slow_mode_default INTEGER NOT NULL DEFAULT 0");
+  await addColumn("ALTER TABLE channels ADD COLUMN followers_only INTEGER NOT NULL DEFAULT 0");
+  await addColumn("ALTER TABLE channels ADD COLUMN banned_words TEXT");
   await client.execute(
     "UPDATE channels SET stream_key = slug WHERE stream_key IS NULL OR stream_key = ''",
   );

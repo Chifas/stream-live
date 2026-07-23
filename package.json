@@ -1,0 +1,31 @@
+{
+  "name": "stream-live",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Plataforma de streaming en directo (tipo Twitch) con Next.js 15, React 19, Tailwind v4 y chat en tiempo real por WebSockets.",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development tsx watch server.ts",
+    "build": "next build",
+    "start": "cross-env NODE_ENV=production tsx server.ts"
+  },
+  "dependencies": {
+    "hls.js": "^1.5.20",
+    "next": "^15.4.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.0",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@types/ws": "^8.18.1",
+    "cross-env": "^7.0.3",
+    "postcss": "^8.5.0",
+    "tailwindcss": "^4.1.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.7.0"
+  }
+}

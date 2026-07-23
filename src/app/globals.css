@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+/* Tema de la app (Tailwind v4 usa @theme para exponer tokens como utilidades). */
+@theme {
+  --color-ink: #0e0e10;
+  --color-ink-2: #18181b;
+  --color-ink-3: #1f1f23;
+  --color-edge: #2a2a2e;
+  --color-brand: #9147ff;
+  --color-brand-2: #a970ff;
+  --color-live: #eb0400;
+  --color-muted: #adadb8;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--color-ink);
+  color: #efeff1;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-edge) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-edge);
+  border-radius: 999px;
+}
+
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.live-dot {
+  animation: pulse-live 1.6s ease-in-out infinite;
+}

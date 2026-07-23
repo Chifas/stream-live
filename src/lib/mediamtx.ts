@@ -13,6 +13,10 @@ import "server-only";
 export const RTMP_BASE = process.env.MEDIAMTX_RTMP ?? "rtmp://localhost:1935";
 const HLS_BASE = process.env.MEDIAMTX_HLS_BASE ?? "http://localhost:8888";
 const API_BASE = process.env.MEDIAMTX_API ?? "http://localhost:9997";
+// Servidor de reproducción de grabaciones (VOD). PLAYBACK_BASE lo usa el
+// navegador; PLAYBACK_API lo consulta el servidor (útil dentro de Docker).
+const PLAYBACK_BASE = process.env.MEDIAMTX_PLAYBACK_BASE ?? "http://localhost:9996";
+const PLAYBACK_API = process.env.MEDIAMTX_PLAYBACK_API ?? PLAYBACK_BASE;
 
 export function ingestUrl(): string {
   return RTMP_BASE;
@@ -41,5 +45,39 @@ export async function isPathLive(streamKey: string | null | undefined): Promise<
     return Boolean(data.ready);
   } catch {
     return false;
+  }
+}
+
+export interface Recording {
+  start: string;
+  duration: number;
+  url: string;
+}
+
+/**
+ * Lista las grabaciones (repeticiones) disponibles de un canal consultando el
+ * servidor de reproducción de MediaMTX. Devuelve [] si no está disponible.
+ */
+export async function listRecordings(streamKey: string | null | undefined): Promise<Recording[]> {
+  if (!streamKey) return [];
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 1000);
+    const res = await fetch(`${PLAYBACK_API}/list?path=${encodeURIComponent(streamKey)}`, {
+      signal: controller.signal,
+      cache: "no-store",
+    });
+    clearTimeout(timer);
+    if (!res.ok) return [];
+    const data = (await res.json()) as { start: string; duration: number }[];
+    return data.map((r) => ({
+      start: r.start,
+      duration: r.duration,
+      url:
+        `${PLAYBACK_BASE}/get?path=${encodeURIComponent(streamKey)}` +
+        `&start=${encodeURIComponent(r.start)}&duration=${r.duration}&format=mp4`,
+    }));
+  } catch {
+    return [];
   }
 }

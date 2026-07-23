@@ -70,7 +70,11 @@ export default async function HomePage() {
         </div>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
           {categories.map((cat) => (
-            <div key={cat.slug} className="group cursor-pointer">
+            <Link
+              key={cat.slug}
+              href={`/search?q=${encodeURIComponent(cat.name)}`}
+              className="group"
+            >
               <Image
                 src={cat.coverUrl}
                 alt={cat.name}
@@ -81,7 +85,7 @@ export default async function HomePage() {
               />
               <p className="mt-1 truncate text-sm font-semibold">{cat.name}</p>
               <p className="text-xs text-muted">{formatViewers(cat.viewers)} esp.</p>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

@@ -16,6 +16,17 @@ hlsAllowOrigin: "*"
 api: yes
 apiAddress: :9997
 
+# Grabación de las emisiones (VOD / repeticiones).
+record: yes
+recordPath: /recordings/%path/%Y-%m-%d_%H-%M-%S-%f
+recordFormat: fmp4
+recordSegmentDuration: 1h
+recordDeleteAfter: 168h
+
+# Servidor de reproducción de las grabaciones.
+playback: yes
+playbackAddress: :9996
+
 # WebRTC opcional (baja latencia) — expuesto por si quieres experimentar.
 webrtc: yes
 webrtcAddress: :8889

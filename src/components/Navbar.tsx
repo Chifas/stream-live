@@ -16,7 +16,7 @@ export async function Navbar() {
             Stream<span className="text-brand-2">Live</span>
           </span>
         </Link>
-        <nav className="hidden items-center gap-4 text-sm text-muted md:flex">
+        <nav aria-label="Navegación principal" className="hidden items-center gap-4 text-sm text-muted md:flex">
           <Link href="/" className="hover:text-white">Explorar</Link>
           <Link href="/browse" className="hover:text-white">Categorías</Link>
           {session && (

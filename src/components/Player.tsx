@@ -110,6 +110,8 @@ export function Player({ src, poster }: PlayerProps) {
             <button
               onClick={() => setMenuOpen((v) => !v)}
               aria-label="Calidad de vídeo"
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
               className="rounded bg-black/70 px-2 py-1 text-xs font-semibold text-white hover:bg-black/90"
             >
               {current === -1 ? "Auto" : `${levels.find((l) => l.index === current)?.height ?? ""}p`}

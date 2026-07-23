@@ -23,10 +23,15 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-ink text-fg">
+        <a href="#contenido" className="skip-link">
+          Saltar al contenido
+        </a>
         <Navbar />
         <div className="flex">
           <Sidebar />
-          <main className="min-w-0 flex-1">{children}</main>
+          <main id="contenido" className="min-w-0 flex-1">
+            {children}
+          </main>
         </div>
       </body>
     </html>

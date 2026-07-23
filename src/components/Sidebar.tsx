@@ -7,7 +7,10 @@ export async function Sidebar() {
   const live = await getChannels();
 
   return (
-    <aside className="hidden w-60 shrink-0 border-r border-edge bg-ink-2 lg:block">
+    <aside
+      aria-label="Canales recomendados"
+      className="hidden w-60 shrink-0 border-r border-edge bg-ink-2 lg:block"
+    >
       <div className="sticky top-14 max-h-[calc(100vh-3.5rem)] overflow-y-auto py-4">
         <h2 className="px-4 pb-2 text-xs font-bold uppercase tracking-wider text-muted">
           Canales recomendados

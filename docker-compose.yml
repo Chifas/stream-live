@@ -10,8 +10,10 @@ services:
       - PORT=3000
       # La API la consulta el servidor (red interna de compose)…
       - MEDIAMTX_API=http://mediamtx:9997
-      # …pero el HLS lo carga el NAVEGADOR, así que debe ser accesible desde el host.
+      - MEDIAMTX_PLAYBACK_API=http://mediamtx:9996
+      # …pero HLS y VOD los carga el NAVEGADOR, así que apuntan al host.
       - MEDIAMTX_HLS_BASE=http://localhost:8888
+      - MEDIAMTX_PLAYBACK_BASE=http://localhost:9996
       - MEDIAMTX_RTMP=rtmp://localhost:1935
       # Chat con Redis pub/sub (permite escalar a varias instancias).
       - REDIS_URL=redis://redis:6379
@@ -37,8 +39,10 @@ services:
       - "8888:8888" # HLS (reproducción)
       - "8889:8889" # WebRTC (opcional)
       - "9997:9997" # API de estado
+      - "9996:9996" # Servidor de reproducción (VOD)
     volumes:
       - ./mediamtx.yml:/mediamtx.yml:ro
+      - stream-rec:/recordings
     restart: unless-stopped
 
   # --- Servicio opcional para producción (ver MEJORAS.md) ---
@@ -50,3 +54,4 @@ services:
 
 volumes:
   stream-data:
+  stream-rec:

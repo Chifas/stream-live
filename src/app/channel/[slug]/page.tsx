@@ -98,6 +98,12 @@ export default async function ChannelPage({
             </div>
             <div className="flex items-center gap-2">
               <FollowButton slug={channel.slug} initialFollowing={following} />
+              <Link
+                href={`/channel/${channel.slug}/vod`}
+                className="rounded-md bg-ink-3 px-4 py-2 text-sm font-semibold text-white transition hover:bg-edge"
+              >
+                ▷ Repeticiones
+              </Link>
               <button
                 className="rounded-md bg-ink-3 px-4 py-2 text-sm font-semibold text-white transition hover:bg-edge"
                 title="Requiere integración de pagos (Stripe) — ver MEJORAS.md"

@@ -20,7 +20,11 @@ export default async function BrowsePage() {
         <h2 className="mb-4 text-xl font-bold">Categorías</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {categories.map((cat) => (
-            <Link key={cat.slug} href="/" className="group">
+            <Link
+              key={cat.slug}
+              href={`/search?q=${encodeURIComponent(cat.name)}`}
+              className="group"
+            >
               <Image
                 src={cat.coverUrl}
                 alt={cat.name}

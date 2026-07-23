@@ -12,6 +12,11 @@ Estado del proyecto y hoja de ruta. Marcado ✅ lo ya implementado en el repo.
   Panel `/studio` con el servidor de ingesta y la clave de emisión del canal.
 - ✅ **Emotes personalizados** en el chat vía **7TV / BTTV / FFZ** (API pública sin
   auth): los nombres de emote se renderizan como imágenes.
+- ✅ **Grabación / VOD**: MediaMTX graba las emisiones; página de repeticiones por
+  canal con reproductor (se activa al haber grabaciones reales).
+- ✅ **Accesibilidad**: foco visible, skip-link, `aria-label` en navegación y
+  controles, categorías como enlaces, `aria-live` en el chat.
+- ✅ **Tests E2E** con **Playwright** (home, canal, chat, búsqueda, login).
 - ✅ **Base de datos** (SQLite/libSQL + Drizzle ORM): usuarios, canales, categorías,
   seguidores, mensajes y moderación, con bootstrap y seed automáticos.
 - ✅ **Autenticación** real: registro/login (hash **scrypt**), sesión **JWT** en
@@ -42,7 +47,8 @@ Estado del proyecto y hoja de ruta. Marcado ✅ lo ya implementado en el repo.
 ### 1. Infraestructura de streaming (mejoras sobre lo ya hecho)
 - [x] ~~Media server de ingesta (MediaMTX, RTMP→HLS)~~ ✅ hecho.
 - [ ] **Baja latencia** con LL-HLS o **WebRTC** (WHIP/WHEP) — MediaMTX ya expone WebRTC.
-- [ ] **ABR** (múltiples calidades) y **grabación/VOD** (repeticiones).
+- [x] ~~Grabación/VOD (repeticiones)~~ ✅ hecho (MediaMTX record + playback).
+- [ ] **ABR** (múltiples calidades de transcodificación).
 - [ ] **Miniaturas en vivo** capturadas del stream.
 - [ ] **Emotes nativos de Twitch** (primera parte) — requiere la API de Twitch
       (client-id/secret); los de 7TV/BTTV/FFZ ya funcionan.
@@ -73,10 +79,11 @@ Estado del proyecto y hoja de ruta. Marcado ✅ lo ya implementado en el repo.
 - [ ] Notificaciones push de "en directo".
 
 ### 7. Calidad y operación
-- [ ] **E2E con Playwright** (además de los unit tests actuales).
-- [ ] **i18n** (español/inglés) con `next-intl`.
+- [x] ~~E2E con Playwright~~ ✅ hecho.
+- [x] ~~Accesibilidad (foco, aria, landmarks)~~ ✅ base hecha; falta subtítulos WebVTT.
+- [ ] **i18n** (español/inglés).
 - [ ] **Observabilidad**: Sentry + métricas de reproducción (QoE, rebuffering) — requiere DSN.
-- [ ] Accesibilidad AA completa (subtítulos WebVTT, auditoría de teclado).
+- [ ] Subtítulos/captions (WebVTT) en el reproductor.
 
 ### 8. Despliegue
 - [ ] Hosting con runtime Node persistente (Railway, Render, Fly.io, VPS) — el

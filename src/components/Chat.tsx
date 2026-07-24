@@ -227,16 +227,26 @@ export function Chat({ channel }: { channel: string }) {
               {it.text}
             </p>
           ) : (
-            <p key={it.msg.id} className="break-words leading-snug">
+            <p
+              key={it.msg.id}
+              className="group/msg break-words rounded-md px-1.5 py-1 leading-snug transition-colors hover:bg-white/[0.05]"
+            >
+              <span
+                aria-hidden
+                className="mr-1.5 inline-grid size-5 place-items-center rounded-full align-middle text-[10px] font-bold text-white"
+                style={{ backgroundColor: it.msg.color }}
+              >
+                {it.msg.user.charAt(0).toUpperCase()}
+              </span>
               {BADGE[it.msg.role] && (
                 <span
-                  className={`mr-1 rounded px-1 py-0.5 text-[10px] font-bold ${BADGE[it.msg.role]!.cls}`}
+                  className={`mr-1 align-middle rounded px-1 py-0.5 text-[10px] font-bold ${BADGE[it.msg.role]!.cls}`}
                 >
                   {BADGE[it.msg.role]!.label}
                 </span>
               )}
               {it.msg.mod && !BADGE[it.msg.role] && (
-                <span className="mr-1 rounded bg-green-600 px-1 py-0.5 text-[10px] font-bold text-white">
+                <span className="mr-1 align-middle rounded bg-green-600 px-1 py-0.5 text-[10px] font-bold text-white">
                   MOD
                 </span>
               )}

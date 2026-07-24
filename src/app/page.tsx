@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getChannels, getCategories } from "@/lib/queries";
 import { ChannelCard } from "@/components/ChannelCard";
+import { CategoryCard } from "@/components/CategoryCard";
 import { formatViewers } from "@/lib/format";
 import { getT } from "@/i18n/server";
 import { PlayIcon, ArrowRightIcon } from "@/components/icons";
@@ -94,26 +95,13 @@ export default async function HomePage() {
         </div>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
           {categories.map((cat) => (
-            <Link
+            <CategoryCard
               key={cat.slug}
+              name={cat.name}
+              coverUrl={cat.coverUrl}
+              viewers={cat.viewers}
               href={`/search?q=${encodeURIComponent(cat.name)}`}
-              className="group"
-            >
-              <div className="lift overflow-hidden rounded-xl2 ring-1 ring-edge/70">
-                <Image
-                  src={cat.coverUrl}
-                  alt={cat.name}
-                  width={640}
-                  height={360}
-                  unoptimized
-                  className="aspect-[3/4] w-full object-cover"
-                />
-              </div>
-              <p className="mt-2 truncate text-sm font-semibold">{cat.name}</p>
-              <p className="text-xs tabular-nums text-muted">
-                {formatViewers(cat.viewers)} esp.
-              </p>
-            </Link>
+            />
           ))}
         </div>
       </section>

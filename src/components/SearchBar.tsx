@@ -22,7 +22,7 @@ export function SearchBar({
 
   return (
     <form onSubmit={submit} className="flex max-w-md flex-1" role="search">
-      <div className="flex w-full items-center rounded-md border border-edge bg-ink-3 pl-3 pr-1.5 transition-colors focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/25">
+      <div className="flex w-full items-center rounded-md border border-edge bg-ink-3 pl-3 pr-1.5 transition-colors focus-within:border-brand">
         <input
           type="search"
           value={q}

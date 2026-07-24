@@ -121,6 +121,18 @@ body {
   border-radius: 6px;
 }
 
+/* Los campos de formulario muestran el foco con su propio borde/anillo
+   (border-brand o focus-within del contenedor), no con un contorno extra.
+   Así se evita el "doble borde" en cualquier input de la app. */
+input:focus,
+input:focus-visible,
+textarea:focus,
+textarea:focus-visible,
+select:focus,
+select:focus-visible {
+  outline: none;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

@@ -27,7 +27,7 @@ export default async function FollowingPage() {
           <p className="text-muted">Todavía no sigues ningún canal.</p>
           <Link
             href="/"
-            className="mt-4 inline-block rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-2"
+            className="btn-brand mt-4 inline-block rounded-md px-4 py-2 text-sm font-semibold"
           >
             Descubrir directos
           </Link>

@@ -328,7 +328,7 @@ export function Chat({ channel }: { channel: string }) {
           <button
             type="submit"
             disabled={!input.trim()}
-            className="rounded-md bg-brand px-3 py-2 text-sm font-semibold text-white transition hover:bg-brand-2 disabled:cursor-not-allowed disabled:opacity-40"
+            className="btn-brand rounded-md px-3 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-40"
           >
             {t("chat.send")}
           </button>

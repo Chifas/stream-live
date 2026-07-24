@@ -38,7 +38,7 @@ export default async function DashboardPage() {
         <div className="mt-6 rounded-xl border border-edge bg-ink-2 p-6 text-center">
           <p className="text-muted">Todavía no tienes un canal. Crea el tuyo para empezar a configurarlo.</p>
           <form action={createChannelAction} className="mt-4">
-            <button className="rounded-md bg-brand px-5 py-2.5 font-semibold text-white transition hover:bg-brand-2">
+            <button className="btn-brand rounded-md px-5 py-2.5 font-semibold">
               Crear mi canal
             </button>
           </form>

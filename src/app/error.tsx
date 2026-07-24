@@ -9,7 +9,7 @@ export default function Error({ reset }: { error: Error; reset: () => void }) {
         <p className="mt-2 text-muted">Ha ocurrido un error al cargar esta página.</p>
         <button
           onClick={reset}
-          className="mt-6 rounded-md bg-brand px-5 py-2.5 font-semibold text-white transition hover:bg-brand-2"
+          className="btn-brand mt-6 rounded-md px-5 py-2.5 font-semibold"
         >
           Reintentar
         </button>

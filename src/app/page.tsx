@@ -22,7 +22,7 @@ export default async function HomePage() {
       {/* Hero destacado */}
       <Link
         href={`/channel/${featured.slug}`}
-        className="group relative mb-10 block overflow-hidden rounded-xl2 border border-edge/70"
+        className="group relative mb-10 block overflow-hidden rounded-xl2 ring-1 ring-brand/25 transition-shadow duration-200 hover:glow-brand"
       >
         <Image
           src={featured.thumbnailUrl}

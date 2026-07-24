@@ -50,7 +50,7 @@ export default async function ChannelPage({
     <div className="flex h-[calc(100vh-3.5rem)] flex-col xl:flex-row">
       {/* Columna principal: vídeo + info */}
       <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
-        <Player src={videoSrc} poster={channel.thumbnailUrl} />
+        <Player src={videoSrc} poster={channel.thumbnailUrl} live />
 
         <div className="border-b border-edge px-4 py-4">
           <div className="flex flex-wrap items-start gap-3">

@@ -78,11 +78,18 @@ body {
   transition:
     transform 0.18s ease-out,
     box-shadow 0.18s ease-out;
-  will-change: auto;
 }
 .lift:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-pop);
+  transform: translateY(-5px);
+  box-shadow:
+    var(--shadow-pop),
+    0 0 0 1px color-mix(in srgb, var(--color-brand) 45%, transparent),
+    0 14px 40px -14px color-mix(in srgb, var(--color-brand) 45%, transparent);
+}
+
+/* Glow de marca reutilizable para acentos. */
+.glow-brand {
+  box-shadow: var(--shadow-glow);
 }
 
 /* Botón primario con acento de marca. */

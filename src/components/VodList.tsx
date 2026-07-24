@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Recording } from "@/lib/mediamtx";
+import { Player } from "./Player";
 
 function fmtDuration(s: number): string {
   const m = Math.floor(s / 60);
@@ -20,12 +21,9 @@ export function VodList({ recordings }: { recordings: Recording[] }) {
     <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
       <div>
         {current ? (
-          <video
-            key={current.url}
-            src={current.url}
-            controls
-            className="aspect-video w-full rounded-lg bg-black"
-          />
+          <div className="overflow-hidden rounded-xl2 ring-1 ring-edge/70">
+            <Player key={current.url} src={current.url} />
+          </div>
         ) : (
           <div className="grid aspect-video w-full place-items-center rounded-lg bg-ink-2 text-muted">
             Selecciona una repetición

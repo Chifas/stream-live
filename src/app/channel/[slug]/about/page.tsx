@@ -51,7 +51,6 @@ export default async function AboutPage({ params }: { params: Promise<{ slug: st
   ]);
 
   const trailer = channel.trailerUrl?.trim() || "";
-  const isHls = trailer.endsWith(".m3u8");
   const banner = channel.bannerUrl?.trim() || "";
 
   return (
@@ -115,17 +114,9 @@ export default async function AboutPage({ params }: { params: Promise<{ slug: st
           <VideoIcon className="size-5 text-brand-2" /> Tráiler del canal
         </h2>
         {trailer ? (
-          isHls ? (
+          <div className="overflow-hidden rounded-xl2 ring-1 ring-edge/70">
             <Player src={trailer} poster={channel.thumbnailUrl} />
-          ) : (
-            <video
-              src={trailer}
-              poster={channel.thumbnailUrl}
-              controls
-              playsInline
-              className="aspect-video w-full rounded-xl2 bg-black"
-            />
-          )
+          </div>
         ) : (
           <div className="grid aspect-video w-full place-items-center rounded-xl2 border border-dashed border-edge bg-ink-2 text-center text-muted">
             <div>

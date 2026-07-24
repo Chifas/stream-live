@@ -161,3 +161,33 @@ export const InfoIcon = (p: IconProps) => (
     <path d="M12 11v5M12 8h.01" />
   </Line>
 );
+
+export function PauseIcon({ className = "size-4", ...props }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true" {...props}>
+      <rect x="6" y="5" width="4" height="14" rx="1" />
+      <rect x="14" y="5" width="4" height="14" rx="1" />
+    </svg>
+  );
+}
+
+export const VolumeHighIcon = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M11 5 6 9H3v6h3l5 4V5Z" />
+    <path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12" />
+  </Line>
+);
+
+export const VolumeMuteIcon = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M11 5 6 9H3v6h3l5 4V5Z" />
+    <path d="m17 9 5 6M22 9l-5 6" />
+  </Line>
+);
+
+export const SettingsIcon = (p: IconProps) => (
+  <Line {...p}>
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z" />
+  </Line>
+);

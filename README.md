@@ -108,6 +108,25 @@ docker compose up --build
 Levanta la app (puerto 3000) **y MediaMTX** (RTMP 1935 · HLS 8888 · API 9997),
 con un volumen persistente para la BD.
 
+## 🛠️ Configuración de Claude Code (portátil)
+
+El proyecto trae su configuración de Claude Code versionada en `.claude/`, así
+que al clonar el repo en otro equipo funciona sin preparar nada:
+
+- **Hooks** (`.claude/hooks/`): `guard-secrets.cjs` (bloquea editar ficheros
+  sensibles) y `format-on-edit.cjs` (formatea/lint al editar), activados desde
+  `.claude/settings.json`.
+- **Skills de proyecto** (`.claude/skills/`): `db-migration`, `sync-roadmap`.
+
+Lo único que se instala aparte (es global, no vive en el repo) es el plugin
+opcional. En un equipo nuevo, reinstálalo una vez:
+
+```
+/plugin install claude-code-setup@claude-plugins-official
+```
+
+> `.claude/settings.local.json` (permisos locales) es por-máquina y no se sube a propósito.
+
 ## 📌 Mejoras
 
 Consulta [`MEJORAS.md`](./MEJORAS.md) para lo implementado y la hoja de ruta

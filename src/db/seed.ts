@@ -5,6 +5,27 @@ import * as schema from "./schema";
 import { CHANNELS as SEED_CHANNELS, CATEGORIES as SEED_CATEGORIES } from "@/lib/seed-data";
 import { hashPassword } from "@/lib/password";
 
+/** Usuarios de demo. `owns` = slug del canal del que es dueño (opcional). */
+const DEMO_USERS: {
+  username: string;
+  password: string;
+  role: "admin" | "creator" | "viewer";
+  color: string;
+  owns?: string;
+}[] = [
+  { username: "admin", password: "admin1234", role: "admin", color: "#ff6ad5" },
+  { username: "streamer", password: "demo1234", role: "creator", color: "#4cc9f0", owns: "nova_plays" },
+  { username: "pixelforge", password: "demo1234", role: "creator", color: "#8a6dff", owns: "pixel_forge" },
+  { username: "aurorabeats", password: "demo1234", role: "creator", color: "#00d1b2", owns: "aurora_beats" },
+  { username: "espectador", password: "demo1234", role: "viewer", color: "#90be6d" },
+  { username: "moderador", password: "demo1234", role: "viewer", color: "#ffb703" },
+];
+
+/** Moderadores por canal: slug -> nombres de usuario. */
+const DEMO_MODS: Record<string, string[]> = {
+  nova_plays: ["espectador", "moderador"],
+};
+
 /** Siembra datos de demo la primera vez (si la tabla de canales está vacía). */
 export async function seedIfEmpty(db: LibSQLDatabase<typeof schema>) {
   const [{ count }] = await db
@@ -14,36 +35,28 @@ export async function seedIfEmpty(db: LibSQLDatabase<typeof schema>) {
 
   const now = Date.now();
 
-  // Usuarios de demo.
-  const adminId = randomUUID();
-  const creatorId = randomUUID();
-  const modId = randomUUID();
-  await db.insert(schema.users).values([
-    {
-      id: adminId,
-      username: "admin",
-      passwordHash: await hashPassword("admin1234"),
-      role: "admin",
-      color: "#ff6ad5",
+  // Usuarios.
+  const idByUsername = new Map<string, string>();
+  const userRows = [];
+  for (const u of DEMO_USERS) {
+    const id = randomUUID();
+    idByUsername.set(u.username, id);
+    userRows.push({
+      id,
+      username: u.username,
+      passwordHash: await hashPassword(u.password),
+      role: u.role,
+      color: u.color,
       createdAt: now,
-    },
-    {
-      id: creatorId,
-      username: "streamer",
-      passwordHash: await hashPassword("demo1234"),
-      role: "creator",
-      color: "#4cc9f0",
-      createdAt: now,
-    },
-    {
-      id: modId,
-      username: "espectador",
-      passwordHash: await hashPassword("demo1234"),
-      role: "viewer",
-      color: "#90be6d",
-      createdAt: now,
-    },
-  ]);
+    });
+  }
+  await db.insert(schema.users).values(userRows);
+
+  // Mapa slug -> ownerUserId.
+  const ownerBySlug = new Map<string, string>();
+  for (const u of DEMO_USERS) {
+    if (u.owns) ownerBySlug.set(u.owns, idByUsername.get(u.username)!);
+  }
 
   await db.insert(schema.categories).values(
     SEED_CATEGORIES.map((c) => ({
@@ -59,8 +72,7 @@ export async function seedIfEmpty(db: LibSQLDatabase<typeof schema>) {
     SEED_CHANNELS.map((c) => ({
       id: randomUUID(),
       slug: c.slug,
-      // El primer canal pertenece al usuario "streamer" (para demo de moderación).
-      ownerUserId: c.slug === "nova_plays" ? creatorId : null,
+      ownerUserId: ownerBySlug.get(c.slug) ?? null,
       streamKey: c.slug,
       displayName: c.displayName,
       category: c.category,
@@ -76,4 +88,23 @@ export async function seedIfEmpty(db: LibSQLDatabase<typeof schema>) {
       about: c.about,
     })),
   );
+
+  // Moderadores por canal.
+  const modRows = [];
+  for (const [slug, usernames] of Object.entries(DEMO_MODS)) {
+    for (const username of usernames) {
+      const userId = idByUsername.get(username);
+      if (userId) {
+        modRows.push({
+          id: randomUUID(),
+          channelSlug: slug,
+          userId,
+          username,
+          addedBy: "seed",
+          createdAt: now,
+        });
+      }
+    }
+  }
+  if (modRows.length) await db.insert(schema.moderators).values(modRows);
 }

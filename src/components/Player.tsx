@@ -25,10 +25,9 @@ interface Level {
   fps: number;
 }
 
-/** Etiqueta de calidad estilo Twitch: 1080p60 / 720p / … */
+/** Etiqueta de calidad con FPS cuando el stream los declara: 1080p60 / 720p30 / … */
 function qualityLabel(l: Level): string {
-  const fps = l.fps >= 50 ? String(Math.round(l.fps)) : "";
-  return `${l.height}p${fps}`;
+  return l.fps > 0 ? `${l.height}p${Math.round(l.fps)}` : `${l.height}p`;
 }
 
 function fmt(s: number): string {

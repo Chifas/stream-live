@@ -10,7 +10,8 @@ import type { Channel, Category } from "./types";
 // Manifiestos HLS públicos de prueba (bucle continuo, ideales para demo).
 const TEST_HLS = [
   "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-  "https://test-streams.mux.dev/pts_shift/master.m3u8",
+  // Este declara FRAME-RATE, así el selector muestra los FPS (p. ej. 750p24).
+  "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8",
   "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8",
   "https://test-streams.mux.dev/tos_ismc/main.m3u8",
 ];

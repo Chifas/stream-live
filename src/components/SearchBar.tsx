@@ -22,19 +22,19 @@ export function SearchBar({
 
   return (
     <form onSubmit={submit} className="flex max-w-md flex-1" role="search">
-      <div className="flex w-full items-center rounded-md border border-edge bg-ink-3 pl-3 pr-1.5 transition-colors focus-within:border-brand">
+      <div className="flex w-full items-center rounded-md border border-edge bg-ink-3 pl-3 pr-1.5 transition-colors focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/25">
         <input
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder={placeholder}
           aria-label={placeholder}
-          className="w-full bg-transparent py-2 text-sm outline-none placeholder:text-muted"
+          className="w-full bg-transparent py-2 text-sm outline-none placeholder:text-muted focus:outline-none focus-visible:outline-none"
         />
         <button
           type="submit"
           aria-label="Buscar"
-          className="grid size-7 shrink-0 place-items-center rounded text-muted transition-colors hover:text-fg"
+          className="grid size-7 shrink-0 place-items-center rounded text-muted transition-colors hover:text-fg focus:outline-none focus-visible:outline-none"
         >
           <SearchIcon className="size-4" />
         </button>

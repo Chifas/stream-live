@@ -48,10 +48,13 @@ export default async function ChannelPage({
   const videoSrc = liveNow ? hlsUrlFor(channel.streamKey!) : channel.hlsUrl;
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem)] flex-col xl:flex-row">
+    <div className="flex flex-col lg:h-[calc(100dvh-3.5rem)] lg:flex-row">
       {/* Columna principal: vídeo + info */}
-      <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
-        <Player src={videoSrc} poster={channel.thumbnailUrl} live />
+      <div className="flex min-w-0 flex-1 flex-col lg:min-h-0 lg:overflow-y-auto">
+        {/* En móvil el vídeo queda fijo arriba mientras se hace scroll. */}
+        <div className="sticky top-14 z-20 bg-black lg:static lg:top-0 lg:z-auto">
+          <Player src={videoSrc} poster={channel.thumbnailUrl} live />
+        </div>
 
         <div className="border-b border-edge px-4 py-4">
           <div className="flex flex-wrap items-start gap-3">
@@ -142,8 +145,8 @@ export default async function ChannelPage({
         </div>
       </div>
 
-      {/* Columna del chat */}
-      <div className="h-[60vh] w-full shrink-0 border-t border-edge xl:h-auto xl:w-[340px] xl:border-l xl:border-t-0">
+      {/* Columna del chat: bajo el vídeo en móvil, barra lateral en escritorio. */}
+      <div className="h-[70vh] w-full shrink-0 border-t border-edge lg:h-full lg:w-[360px] lg:border-l lg:border-t-0">
         <Chat channel={channel.slug} />
       </div>
     </div>

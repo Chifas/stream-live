@@ -3,6 +3,7 @@ import { getSession } from "@/lib/session";
 import { getChannelByOwner } from "@/lib/queries";
 import { ingestUrl, isPathLive } from "@/lib/mediamtx";
 import { CopyField } from "@/components/CopyField";
+import { BroadcastIcon } from "@/components/icons";
 
 export const metadata = { title: "Studio — Empieza a emitir | StreamLive" };
 export const dynamic = "force-dynamic";
@@ -14,7 +15,12 @@ export default async function StudioPage() {
 
   return (
     <div className="mx-auto max-w-3xl p-6">
-      <h1 className="text-2xl font-black">Studio del creador</h1>
+      <h1 className="flex items-center gap-2.5 text-2xl font-black">
+        <span className="btn-brand grid size-9 place-items-center rounded-lg shadow-none">
+          <BroadcastIcon className="size-5" />
+        </span>
+        Studio del creador
+      </h1>
       <p className="mt-2 text-muted">
         Emite en directo <span className="text-fg">de verdad</span> con OBS y
         el media server <span className="text-brand-2">MediaMTX</span> (gratis, sin
@@ -22,14 +28,11 @@ export default async function StudioPage() {
       </p>
 
       {!session ? (
-        <div className="mt-6 rounded-lg border border-edge bg-ink-2 p-4">
+        <div className="mt-6 card p-5">
           <p className="text-muted">
             Inicia sesión como creador para ver tu clave de emisión.
           </p>
-          <Link
-            href="/login"
-            className="mt-3 inline-block rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-2"
-          >
+          <Link href="/login" className="btn-brand mt-3 inline-block rounded-md px-4 py-2 text-sm font-semibold">
             Entrar
           </Link>
           <p className="mt-3 text-xs text-muted">
@@ -37,7 +40,7 @@ export default async function StudioPage() {
           </p>
         </div>
       ) : !channel ? (
-        <div className="mt-6 rounded-lg border border-edge bg-ink-2 p-4 text-muted">
+        <div className="mt-6 card p-5 text-muted">
           Tu usuario no tiene ningún canal asignado. La cuenta de demo{" "}
           <code>streamer</code> es dueña del canal <code>nova_plays</code>.
         </div>
@@ -56,7 +59,7 @@ export default async function StudioPage() {
             </span>
           </div>
 
-          <div className="rounded-lg border border-edge bg-ink-2 p-4">
+          <div className="card p-5">
             <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-muted">
               Configura OBS → Ajustes → Emisión (Servicio: Personalizado)
             </h2>
@@ -69,7 +72,7 @@ export default async function StudioPage() {
             </p>
           </div>
 
-          <div className="rounded-lg border border-edge bg-ink-2 p-4">
+          <div className="card p-5">
             <h2 className="mb-2 text-sm font-bold uppercase tracking-wide text-muted">
               Tubería completa
             </h2>

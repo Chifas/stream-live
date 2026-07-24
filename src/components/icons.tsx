@@ -185,6 +185,32 @@ export const VolumeMuteIcon = (p: IconProps) => (
   </Line>
 );
 
+export const MessageIcon = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2Z" />
+  </Line>
+);
+
+export const ClockIcon = (p: IconProps) => (
+  <Line {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v5l3 2" />
+  </Line>
+);
+
+export const BanIcon = (p: IconProps) => (
+  <Line {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="m5.6 5.6 12.8 12.8" />
+  </Line>
+);
+
+export const CheckIcon = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M20 6 9 17l-5-5" />
+  </Line>
+);
+
 export const SettingsIcon = (p: IconProps) => (
   <Line {...p}>
     <circle cx="12" cy="12" r="3" />

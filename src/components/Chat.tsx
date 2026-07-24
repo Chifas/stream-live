@@ -3,7 +3,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ChatMessage, Role, ServerEvent } from "@/lib/types";
 import { useT } from "@/i18n/client";
-import { ShieldIcon } from "./icons";
+import {
+  ShieldIcon,
+  MessageIcon,
+  ClockIcon,
+  BanIcon,
+  CheckIcon,
+} from "./icons";
 
 const ADJ = ["Rápido", "Épico", "Sigiloso", "Neón", "Cósmico", "Salvaje", "Turbo", "Místico"];
 const NOUN = ["Panda", "Dragon", "Halcon", "Zorro", "Buho", "Lobo", "Tigre", "Cuervo"];
@@ -351,36 +357,36 @@ export function Chat({ channel }: { channel: string }) {
             </div>
             <button
               onClick={() => mention(userMenu.name)}
-              className="block w-full px-3 py-2 text-left hover:bg-ink-3"
+              className="flex w-full items-center gap-2.5 px-3 py-2 text-left hover:bg-ink-3"
             >
-              💬 Mencionar
+              <MessageIcon className="size-4 text-muted" /> Mencionar
             </button>
 
             {me.canModerate && userMenu.name !== me.username && (
               <div className="border-t border-edge">
                 <button
                   onClick={() => sendCommand(`/timeout ${userMenu.name} 300`)}
-                  className="block w-full px-3 py-2 text-left hover:bg-ink-3"
+                  className="flex w-full items-center gap-2.5 px-3 py-2 text-left hover:bg-ink-3"
                 >
-                  ⏳ Silenciar 5 min
+                  <ClockIcon className="size-4 text-muted" /> Silenciar 5 min
                 </button>
                 <button
                   onClick={() => sendCommand(`/timeout ${userMenu.name} 600`)}
-                  className="block w-full px-3 py-2 text-left hover:bg-ink-3"
+                  className="flex w-full items-center gap-2.5 px-3 py-2 text-left hover:bg-ink-3"
                 >
-                  ⏳ Silenciar 10 min
+                  <ClockIcon className="size-4 text-muted" /> Silenciar 10 min
                 </button>
                 <button
                   onClick={() => sendCommand(`/ban ${userMenu.name}`)}
-                  className="block w-full px-3 py-2 text-left text-live hover:bg-ink-3"
+                  className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-live hover:bg-ink-3"
                 >
-                  🔨 Expulsar (ban)
+                  <BanIcon className="size-4" /> Expulsar (ban)
                 </button>
                 <button
                   onClick={() => sendCommand(`/unban ${userMenu.name}`)}
-                  className="block w-full px-3 py-2 text-left hover:bg-ink-3"
+                  className="flex w-full items-center gap-2.5 px-3 py-2 text-left hover:bg-ink-3"
                 >
-                  ✅ Readmitir
+                  <CheckIcon className="size-4 text-green-400" /> Readmitir
                 </button>
               </div>
             )}
@@ -389,15 +395,15 @@ export function Chat({ channel }: { channel: string }) {
               <div className="border-t border-edge">
                 <button
                   onClick={() => sendCommand(`/mod ${userMenu.name}`)}
-                  className="block w-full px-3 py-2 text-left hover:bg-ink-3"
+                  className="flex w-full items-center gap-2.5 px-3 py-2 text-left hover:bg-ink-3"
                 >
-                  🛡️ Hacer moderador
+                  <ShieldIcon className="size-4 text-muted" /> Hacer moderador
                 </button>
                 <button
                   onClick={() => sendCommand(`/unmod ${userMenu.name}`)}
-                  className="block w-full px-3 py-2 text-left hover:bg-ink-3"
+                  className="flex w-full items-center gap-2.5 px-3 py-2 text-left hover:bg-ink-3"
                 >
-                  Quitar moderador
+                  <ShieldIcon className="size-4 text-muted opacity-50" /> Quitar moderador
                 </button>
               </div>
             )}

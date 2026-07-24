@@ -56,11 +56,10 @@ export async function isFollower(userId: string, slug: string): Promise<boolean>
 
 export async function loadHistory(slug: string): Promise<ChatMessage[]> {
   const db = await getDb();
-  const rows = await db
-    .select()
-    .from(messages)
-    .where(eq(messages.channelSlug, slug))
-    .orderBy(asc(messages.ts));
+  const [rows, modIds] = await Promise.all([
+    db.select().from(messages).where(eq(messages.channelSlug, slug)).orderBy(asc(messages.ts)),
+    loadModerators(slug),
+  ]);
   return rows.slice(-HISTORY_LIMIT).map((r) => ({
     id: r.id,
     user: r.username,
@@ -68,6 +67,8 @@ export async function loadHistory(slug: string): Promise<ChatMessage[]> {
     color: r.color,
     role: r.role as Role,
     ts: r.ts,
+    // Badge MOD también en el historial: si el autor es mod actual del canal.
+    mod: r.role === "viewer" && !!r.userId && modIds.has(r.userId),
   }));
 }
 

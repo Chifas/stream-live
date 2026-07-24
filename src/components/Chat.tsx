@@ -9,6 +9,8 @@ import {
   ClockIcon,
   BanIcon,
   CheckIcon,
+  BroadcastIcon,
+  StarIcon,
 } from "./icons";
 
 const ADJ = ["Rápido", "Épico", "Sigiloso", "Neón", "Cósmico", "Salvaje", "Turbo", "Místico"];
@@ -34,11 +36,25 @@ type Item =
   | { kind: "msg"; msg: ChatMessage }
   | { kind: "sys"; id: string; text: string; level: "info" | "error" };
 
-const BADGE: Record<Role, { label: string; cls: string } | null> = {
-  admin: { label: "ADMIN", cls: "bg-live text-white" },
-  creator: { label: "STREAMER", cls: "bg-brand text-white" },
+type IconCmp = (p: { className?: string }) => React.ReactElement;
+
+const BADGE: Record<Role, { Icon: IconCmp; cls: string; title: string } | null> = {
+  admin: { Icon: StarIcon, cls: "bg-live", title: "Admin" },
+  creator: { Icon: BroadcastIcon, cls: "bg-brand", title: "Streamer" },
   viewer: null,
 };
+
+/** Emblema (icono) del rol, estilo Twitch, al lado del nombre. */
+function RoleBadge({ Icon, cls, title }: { Icon: IconCmp; cls: string; title: string }) {
+  return (
+    <span
+      title={title}
+      className={`mr-1 inline-grid size-[18px] place-items-center rounded align-middle ${cls}`}
+    >
+      <Icon className="size-3 text-white" />
+    </span>
+  );
+}
 
 type EmoteMap = Record<string, string>;
 
@@ -269,17 +285,9 @@ export function Chat({ channel }: { channel: string }) {
               >
                 {it.msg.user.charAt(0).toUpperCase()}
               </span>
-              {BADGE[it.msg.role] && (
-                <span
-                  className={`mr-1 align-middle rounded px-1 py-0.5 text-[10px] font-bold ${BADGE[it.msg.role]!.cls}`}
-                >
-                  {BADGE[it.msg.role]!.label}
-                </span>
-              )}
+              {BADGE[it.msg.role] && <RoleBadge {...BADGE[it.msg.role]!} />}
               {it.msg.mod && !BADGE[it.msg.role] && (
-                <span className="mr-1 align-middle rounded bg-green-600 px-1 py-0.5 text-[10px] font-bold text-white">
-                  MOD
-                </span>
+                <RoleBadge Icon={ShieldIcon} cls="bg-green-600" title="Moderador" />
               )}
               <button
                 type="button"

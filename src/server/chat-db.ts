@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { and, asc, eq } from "drizzle-orm";
 import { getDb } from "@/db/client";
-import { messages, moderation, moderators, channels, users, follows } from "@/db/schema";
+import { messages, moderation, moderators, channels, users, follows, subscribers } from "@/db/schema";
 import type { ChatMessage, Role } from "@/lib/types";
 
 const HISTORY_LIMIT = 50;
@@ -21,6 +21,7 @@ export interface ChannelSettings {
   slowModeDefault: number;
   followersOnly: boolean;
   bannedWords: string[];
+  subBadgeUrl: string | null;
 }
 
 export async function getChannelSettings(slug: string): Promise<ChannelSettings> {
@@ -31,6 +32,7 @@ export async function getChannelSettings(slug: string): Promise<ChannelSettings>
       slowModeDefault: channels.slowModeDefault,
       followersOnly: channels.followersOnly,
       bannedWords: channels.bannedWords,
+      subBadgeUrl: channels.subBadgeUrl,
     })
     .from(channels)
     .where(eq(channels.slug, slug))
@@ -41,7 +43,18 @@ export async function getChannelSettings(slug: string): Promise<ChannelSettings>
     slowModeDefault: r?.slowModeDefault ?? 0,
     followersOnly: !!r?.followersOnly,
     bannedWords: r?.bannedWords ?? [],
+    subBadgeUrl: r?.subBadgeUrl ?? null,
   };
+}
+
+/** Devuelve el conjunto de userIds suscritos al canal. */
+export async function loadSubscribers(slug: string): Promise<Set<string>> {
+  const db = await getDb();
+  const rows = await db
+    .select({ userId: subscribers.userId })
+    .from(subscribers)
+    .where(eq(subscribers.channelSlug, slug));
+  return new Set(rows.map((r) => r.userId));
 }
 
 export async function isFollower(userId: string, slug: string): Promise<boolean> {
@@ -56,9 +69,10 @@ export async function isFollower(userId: string, slug: string): Promise<boolean>
 
 export async function loadHistory(slug: string): Promise<ChatMessage[]> {
   const db = await getDb();
-  const [rows, modIds] = await Promise.all([
+  const [rows, modIds, subIds] = await Promise.all([
     db.select().from(messages).where(eq(messages.channelSlug, slug)).orderBy(asc(messages.ts)),
     loadModerators(slug),
+    loadSubscribers(slug),
   ]);
   return rows.slice(-HISTORY_LIMIT).map((r) => ({
     id: r.id,
@@ -67,8 +81,9 @@ export async function loadHistory(slug: string): Promise<ChatMessage[]> {
     color: r.color,
     role: r.role as Role,
     ts: r.ts,
-    // Badge MOD también en el historial: si el autor es mod actual del canal.
+    // Badges también en el historial, según mods/subs actuales del canal.
     mod: r.role === "viewer" && !!r.userId && modIds.has(r.userId),
+    sub: !!r.userId && subIds.has(r.userId),
   }));
 }
 

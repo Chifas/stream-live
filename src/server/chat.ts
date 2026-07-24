@@ -13,6 +13,7 @@ import {
   addModerator,
   removeModerator,
   isFollower,
+  loadSubscribers,
   type Sanction,
 } from "./chat-db";
 import { createBus, type Bus } from "./bus";
@@ -40,12 +41,15 @@ interface Client extends WebSocket {
   canModerate?: boolean;
   isOwner?: boolean;
   isChannelMod?: boolean;
+  isSub?: boolean;
   msgTimes?: number[];
 }
 
 const rooms = new Map<string, Set<Client>>();
 const owners = new Map<string, string | null>();
 const mods = new Map<string, Set<string>>();
+const subs = new Map<string, Set<string>>();
+const subBadge = new Map<string, string | null>();
 const followersOnly = new Map<string, boolean>();
 const bannedWords = new Map<string, string[]>();
 const sanctions = new Map<string, Map<string, Sanction>>();
@@ -146,9 +150,11 @@ async function join(client: Client, channel: string, guestName?: string) {
   owners.set(channel, settings.ownerUserId);
   followersOnly.set(channel, settings.followersOnly);
   bannedWords.set(channel, settings.bannedWords);
+  subBadge.set(channel, settings.subBadgeUrl);
   // Respeta un modo lento activado en caliente por comando; si no, usa el de ajustes.
   if (!slowMode.has(channel)) slowMode.set(channel, settings.slowModeDefault);
   mods.set(channel, await loadModerators(channel));
+  subs.set(channel, await loadSubscribers(channel));
   if (!sanctions.has(channel)) {
     const map = new Map<string, Sanction>();
     for (const s of await loadModeration(channel)) map.set(s.targetUsername, s);
@@ -161,6 +167,7 @@ async function join(client: Client, channel: string, guestName?: string) {
   client.isOwner = isOwner;
   client.isChannelMod = isChannelMod;
   client.canModerate = client.role === "admin" || isOwner || isChannelMod;
+  client.isSub = !!client.userId && (subs.get(channel)?.has(client.userId) ?? false);
 
   send(client, {
     type: "welcome",
@@ -168,6 +175,7 @@ async function join(client: Client, channel: string, guestName?: string) {
     role: client.role,
     canModerate: !!client.canModerate,
     canManageMods: client.role === "admin" || !!client.isOwner,
+    subBadgeUrl: subBadge.get(channel) ?? null,
   });
   send(client, { type: "history", messages: await loadHistory(channel) });
   deliverLocal(channel, { type: "viewers", count: viewerCount(channel) });
@@ -220,6 +228,7 @@ function makeMessage(client: Client, text: string, action = false): ChatMessage 
     action,
     // Badge MOD para moderadores de canal cuyo rol global es viewer.
     mod: client.isChannelMod && client.role === "viewer",
+    sub: !!client.isSub,
   };
 }
 

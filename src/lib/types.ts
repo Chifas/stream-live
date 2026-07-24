@@ -34,6 +34,8 @@ export interface ChatMessage {
   action?: boolean;
   /** true si el autor es moderador del canal (aunque su rol global sea viewer) */
   mod?: boolean;
+  /** true si el autor está suscrito al canal */
+  sub?: boolean;
 }
 
 /** Mensajes que el cliente envía al servidor de chat */
@@ -43,7 +45,14 @@ export type ClientEvent =
 
 /** Mensajes que el servidor envía al cliente */
 export type ServerEvent =
-  | { type: "welcome"; username: string; role: Role; canModerate: boolean; canManageMods: boolean }
+  | {
+      type: "welcome";
+      username: string;
+      role: Role;
+      canModerate: boolean;
+      canManageMods: boolean;
+      subBadgeUrl: string | null;
+    }
   | { type: "history"; messages: ChatMessage[] }
   | { type: "chat"; message: ChatMessage }
   | { type: "system"; text: string; level?: "info" | "error" }

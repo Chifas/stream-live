@@ -106,6 +106,7 @@ export function Chat({ channel }: { channel: string }) {
     canManageMods: boolean;
   }>({ username: "invitado", role: "viewer", canModerate: false, canManageMods: false });
   const [emotes, setEmotes] = useState<EmoteMap>({});
+  const [subBadgeUrl, setSubBadgeUrl] = useState<string | null>(null);
   // Menú contextual al pulsar un nombre de usuario del chat.
   const [userMenu, setUserMenu] = useState<{ name: string; x: number; y: number } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -162,6 +163,7 @@ export function Chat({ channel }: { channel: string }) {
               canModerate: data.canModerate,
               canManageMods: data.canManageMods,
             });
+            setSubBadgeUrl(data.subBadgeUrl);
             break;
           case "history":
             setItems(data.messages.map((msg) => ({ kind: "msg", msg })));
@@ -288,6 +290,15 @@ export function Chat({ channel }: { channel: string }) {
               {BADGE[it.msg.role] && <RoleBadge {...BADGE[it.msg.role]!} />}
               {it.msg.mod && !BADGE[it.msg.role] && (
                 <RoleBadge Icon={ShieldIcon} cls="bg-green-600" title="Moderador" />
+              )}
+              {it.msg.sub && subBadgeUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={subBadgeUrl}
+                  alt="Suscriptor"
+                  title="Suscriptor"
+                  className="mr-1 inline-block size-[18px] rounded align-middle object-cover"
+                />
               )}
               <button
                 type="button"

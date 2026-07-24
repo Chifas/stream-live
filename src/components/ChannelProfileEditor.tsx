@@ -27,11 +27,13 @@ export function ChannelProfileEditor({
   initialBio,
   initialTrailer,
   initialBanner,
+  initialSubBadge,
   label = "Editar",
 }: {
   initialBio: string;
   initialTrailer: string;
   initialBanner: string;
+  initialSubBadge: string;
   label?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -68,6 +70,18 @@ export function ChannelProfileEditor({
           name="bannerUrl"
           defaultValue={initialBanner}
           placeholder="https://…/banner.jpg"
+          className="w-full rounded-md border border-edge bg-ink-3 px-3 py-2 text-sm focus:border-brand"
+        />
+      </div>
+      <div>
+        <label htmlFor="subBadgeUrl" className="mb-1 block text-sm text-muted">
+          Emblema de suscriptor (imagen pequeña, ideal cuadrada)
+        </label>
+        <input
+          id="subBadgeUrl"
+          name="subBadgeUrl"
+          defaultValue={initialSubBadge}
+          placeholder="https://…/emblema.png"
           className="w-full rounded-md border border-edge bg-ink-3 px-3 py-2 text-sm focus:border-brand"
         />
       </div>

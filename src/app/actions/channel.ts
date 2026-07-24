@@ -79,6 +79,7 @@ export async function updateProfileAction(_prev: FormState, formData: FormData):
   const bio = String(formData.get("bio") ?? "").trim().slice(0, 2000);
   const trailerUrl = String(formData.get("trailerUrl") ?? "").trim().slice(0, 500);
   const bannerUrl = String(formData.get("bannerUrl") ?? "").trim().slice(0, 500);
+  const subBadgeUrl = String(formData.get("subBadgeUrl") ?? "").trim().slice(0, 500);
   const url = /^https?:\/\//i;
   if (trailerUrl && !url.test(trailerUrl)) {
     return { error: "El enlace del tráiler debe empezar por http(s)://" };
@@ -86,11 +87,19 @@ export async function updateProfileAction(_prev: FormState, formData: FormData):
   if (bannerUrl && !url.test(bannerUrl)) {
     return { error: "El enlace del banner debe empezar por http(s)://" };
   }
+  if (subBadgeUrl && !url.test(subBadgeUrl)) {
+    return { error: "El enlace del emblema debe empezar por http(s)://" };
+  }
 
   const db = await getDb();
   await db
     .update(channels)
-    .set({ bio: bio || null, trailerUrl: trailerUrl || null, bannerUrl: bannerUrl || null })
+    .set({
+      bio: bio || null,
+      trailerUrl: trailerUrl || null,
+      bannerUrl: bannerUrl || null,
+      subBadgeUrl: subBadgeUrl || null,
+    })
     .where(eq(channels.id, owned.channel.id));
 
   revalidatePath(`/channel/${owned.channel.slug}/about`);

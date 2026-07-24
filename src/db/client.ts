@@ -58,8 +58,17 @@ CREATE TABLE IF NOT EXISTS channels (
   banned_words TEXT,
   trailer_url TEXT,
   bio TEXT,
-  banner_url TEXT
+  banner_url TEXT,
+  sub_badge_url TEXT
 );
+CREATE TABLE IF NOT EXISTS subscribers (
+  id TEXT PRIMARY KEY,
+  channel_slug TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  username TEXT NOT NULL,
+  created_at INTEGER NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS subscribers_channel_user ON subscribers (channel_slug, user_id);
 CREATE TABLE IF NOT EXISTS panels (
   id TEXT PRIMARY KEY,
   channel_slug TEXT NOT NULL,
@@ -132,6 +141,7 @@ async function migrate(client: Client) {
   await addColumn("ALTER TABLE channels ADD COLUMN trailer_url TEXT");
   await addColumn("ALTER TABLE channels ADD COLUMN bio TEXT");
   await addColumn("ALTER TABLE channels ADD COLUMN banner_url TEXT");
+  await addColumn("ALTER TABLE channels ADD COLUMN sub_badge_url TEXT");
   await client.execute(
     "UPDATE channels SET stream_key = slug WHERE stream_key IS NULL OR stream_key = ''",
   );

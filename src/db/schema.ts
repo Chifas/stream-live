@@ -38,7 +38,24 @@ export const channels = sqliteTable("channels", {
   trailerUrl: text("trailer_url"),
   bio: text("bio"),
   bannerUrl: text("banner_url"),
+  // Emblema de suscriptor que sube el creador (imagen que lucen los subs).
+  subBadgeUrl: text("sub_badge_url"),
 });
+
+/** Suscriptores por canal (en la demo la suscripción es gratuita). */
+export const subscribers = sqliteTable(
+  "subscribers",
+  {
+    id: text("id").primaryKey(),
+    channelSlug: text("channel_slug").notNull(),
+    userId: text("user_id").notNull(),
+    username: text("username").notNull(),
+    createdAt: integer("created_at").notNull(),
+  },
+  (t) => ({
+    uniq: uniqueIndex("subscribers_channel_user").on(t.channelSlug, t.userId),
+  }),
+);
 
 /** Paneles del canal (bloques tipo Twitch: info, redes, reglas…). */
 export const panels = sqliteTable("panels", {

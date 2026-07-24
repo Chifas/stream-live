@@ -89,6 +89,7 @@ export default async function AboutPage({ params }: { params: Promise<{ slug: st
             initialBio={channel.bio ?? ""}
             initialTrailer={channel.trailerUrl ?? ""}
             initialBanner={channel.bannerUrl ?? ""}
+            initialSubBadge={channel.subBadgeUrl ?? ""}
             label="Editar perfil"
           />
         </div>

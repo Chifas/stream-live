@@ -26,6 +26,11 @@ const DEMO_MODS: Record<string, string[]> = {
   nova_plays: ["espectador", "moderador"],
 };
 
+/** Suscriptores por canal: slug -> nombres de usuario (demo). */
+const DEMO_SUBS: Record<string, string[]> = {
+  nova_plays: ["espectador"],
+};
+
 // Tráiler de ejemplo (mp4 público) para que la página "Sobre el canal" se vea poblada.
 const DEMO_TRAILER = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
 
@@ -92,6 +97,7 @@ export async function seedIfEmpty(db: LibSQLDatabase<typeof schema>) {
       trailerUrl: DEMO_TRAILER,
       bio: `${c.about}\n\nHorario habitual: tardes entre semana. ¡Únete a la comunidad, participa en el chat y no te pierdas los directos!`,
       bannerUrl: `https://picsum.photos/seed/${encodeURIComponent(c.slug)}-banner/1200/300`,
+      subBadgeUrl: `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(c.slug)}-sub`,
     })),
   );
 
@@ -137,4 +143,16 @@ export async function seedIfEmpty(db: LibSQLDatabase<typeof schema>) {
     }
   }
   if (modRows.length) await db.insert(schema.moderators).values(modRows);
+
+  // Suscriptores por canal.
+  const subRows = [];
+  for (const [slug, usernames] of Object.entries(DEMO_SUBS)) {
+    for (const username of usernames) {
+      const userId = idByUsername.get(username);
+      if (userId) {
+        subRows.push({ id: randomUUID(), channelSlug: slug, userId, username, createdAt: now });
+      }
+    }
+  }
+  if (subRows.length) await db.insert(schema.subscribers).values(subRows);
 }

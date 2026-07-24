@@ -10,7 +10,9 @@ import { Player } from "@/components/Player";
 import { Chat } from "@/components/Chat";
 import { LiveViewers } from "@/components/LiveViewers";
 import { FollowButton } from "@/components/FollowButton";
-import { ReplayIcon, StarIcon, InfoIcon } from "@/components/icons";
+import { SubscribeButton } from "@/components/SubscribeButton";
+import { isSubscribed } from "@/lib/subscriptions";
+import { ReplayIcon, InfoIcon } from "@/components/icons";
 import { ChannelTabs } from "@/components/ChannelTabs";
 import { formatViewers } from "@/lib/format";
 
@@ -41,6 +43,7 @@ export default async function ChannelPage({
 
   const session = await getSession();
   const following = session ? await isFollowing(session.userId, slug) : false;
+  const subscribed = session ? await isSubscribed(session.userId, slug) : false;
   const t = await getT();
 
   // Emisión real (MediaMTX) si hay directo; si no, stream HLS de demo.
@@ -117,12 +120,7 @@ export default async function ChannelPage({
               >
                 <ReplayIcon className="size-4" /> {t("channel.replays")}
               </Link>
-              <button
-                className="flex items-center gap-1.5 rounded-md bg-ink-3 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-edge"
-                title="Requiere integración de pagos (Stripe) — ver MEJORAS.md"
-              >
-                <StarIcon className="size-4" /> {t("channel.subscribe")}
-              </button>
+              <SubscribeButton slug={channel.slug} initialSubscribed={subscribed} />
             </div>
           </div>
         </div>

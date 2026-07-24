@@ -1,10 +1,19 @@
 import "server-only";
 import { and, desc, eq, inArray, like, or } from "drizzle-orm";
 import { getDb } from "@/db/client";
-import { channels, categories, follows, moderators } from "@/db/schema";
-import type { Channel, Category } from "@/db/schema";
+import { channels, categories, follows, moderators, panels } from "@/db/schema";
+import type { Channel, Category, Panel } from "@/db/schema";
 
-export type { Channel, Category };
+export type { Channel, Category, Panel };
+
+export async function getPanels(slug: string): Promise<Panel[]> {
+  const db = await getDb();
+  return db
+    .select()
+    .from(panels)
+    .where(eq(panels.channelSlug, slug))
+    .orderBy(panels.position);
+}
 
 export async function getChannels(): Promise<Channel[]> {
   const db = await getDb();

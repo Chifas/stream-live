@@ -37,7 +37,22 @@ export const channels = sqliteTable("channels", {
   // Perfil del canal (página "Sobre el canal").
   trailerUrl: text("trailer_url"),
   bio: text("bio"),
+  bannerUrl: text("banner_url"),
 });
+
+/** Paneles del canal (bloques tipo Twitch: info, redes, reglas…). */
+export const panels = sqliteTable("panels", {
+  id: text("id").primaryKey(),
+  channelSlug: text("channel_slug").notNull(),
+  title: text("title").notNull(),
+  body: text("body"),
+  imageUrl: text("image_url"),
+  linkUrl: text("link_url"),
+  position: integer("position").notNull().default(0),
+  createdAt: integer("created_at").notNull(),
+});
+
+export type Panel = typeof panels.$inferSelect;
 
 export const categories = sqliteTable("categories", {
   id: text("id").primaryKey(),

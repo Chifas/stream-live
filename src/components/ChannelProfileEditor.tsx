@@ -26,10 +26,12 @@ function Save() {
 export function ChannelProfileEditor({
   initialBio,
   initialTrailer,
+  initialBanner,
   label = "Editar",
 }: {
   initialBio: string;
   initialTrailer: string;
+  initialBanner: string;
   label?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -56,6 +58,18 @@ export function ChannelProfileEditor({
 
   return (
     <form action={action} className="mt-3 space-y-3 rounded-lg border border-edge bg-ink p-4">
+      <div>
+        <label htmlFor="bannerUrl" className="mb-1 block text-sm text-muted">
+          URL del banner de portada (imagen ancha)
+        </label>
+        <input
+          id="bannerUrl"
+          name="bannerUrl"
+          defaultValue={initialBanner}
+          placeholder="https://…/banner.jpg"
+          className="w-full rounded-md border border-edge bg-ink-3 px-3 py-2 text-sm focus:border-brand"
+        />
+      </div>
       <div>
         <label htmlFor="trailerUrl" className="mb-1 block text-sm text-muted">
           URL del tráiler (mp4 o .m3u8)

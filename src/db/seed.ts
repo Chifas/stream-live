@@ -91,8 +91,33 @@ export async function seedIfEmpty(db: LibSQLDatabase<typeof schema>) {
       about: c.about,
       trailerUrl: DEMO_TRAILER,
       bio: `${c.about}\n\nHorario habitual: tardes entre semana. ¡Únete a la comunidad, participa en el chat y no te pierdas los directos!`,
+      bannerUrl: `https://picsum.photos/seed/${encodeURIComponent(c.slug)}-banner/1200/300`,
     })),
   );
+
+  // Paneles de ejemplo para el canal principal.
+  await db.insert(schema.panels).values([
+    {
+      id: randomUUID(),
+      channelSlug: "nova_plays",
+      title: "📜 Reglas del chat",
+      body: "Sé respetuoso, nada de spam ni insultos. Los moderadores tienen la última palabra. ¡Diviértete!",
+      imageUrl: null,
+      linkUrl: null,
+      position: 0,
+      createdAt: now,
+    },
+    {
+      id: randomUUID(),
+      channelSlug: "nova_plays",
+      title: "🔗 Mis redes",
+      body: "Sígueme para no perderte nada.",
+      imageUrl: null,
+      linkUrl: "https://example.com",
+      position: 1,
+      createdAt: now,
+    },
+  ]);
 
   // Moderadores por canal.
   const modRows = [];

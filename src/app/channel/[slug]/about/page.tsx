@@ -2,12 +2,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getChannel, isFollowing } from "@/lib/queries";
+import { getChannel, isFollowing, getPanels } from "@/lib/queries";
 import { getSession } from "@/lib/session";
 import { listRecordings } from "@/lib/mediamtx";
 import { Player } from "@/components/Player";
 import { FollowButton } from "@/components/FollowButton";
 import { ChannelProfileEditor } from "@/components/ChannelProfileEditor";
+import { Panels } from "@/components/Panels";
 import { VideoIcon, InfoIcon, ReplayIcon } from "@/components/icons";
 import { formatViewers } from "@/lib/format";
 
@@ -44,22 +45,36 @@ export default async function AboutPage({ params }: { params: Promise<{ slug: st
   const session = await getSession();
   const isOwner = !!session && (session.userId === channel.ownerUserId || session.role === "admin");
   const following = session ? await isFollowing(session.userId, slug) : false;
-  const recordings = await listRecordings(channel.streamKey);
+  const [recordings, panels] = await Promise.all([
+    listRecordings(channel.streamKey),
+    getPanels(slug),
+  ]);
 
   const trailer = channel.trailerUrl?.trim() || "";
   const isHls = trailer.endsWith(".m3u8");
+  const banner = channel.bannerUrl?.trim() || "";
 
   return (
     <div className="mx-auto max-w-4xl p-4 sm:p-6">
+      {/* Banner de portada */}
+      <div className="overflow-hidden rounded-xl2 ring-1 ring-edge/70">
+        {banner ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={banner} alt={`Banner de ${channel.displayName}`} className="h-32 w-full object-cover sm:h-44" />
+        ) : (
+          <div className="h-32 w-full bg-gradient-to-r from-brand/40 via-ink-2 to-accent/20 sm:h-44" />
+        )}
+      </div>
+
       {/* Cabecera del canal */}
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4 px-1">
         <Image
           src={channel.avatarUrl}
           alt={channel.displayName}
-          width={72}
-          height={72}
+          width={80}
+          height={80}
           unoptimized
-          className="size-16 rounded-full bg-ink-3 ring-2 ring-brand sm:size-[72px]"
+          className="-mt-10 size-20 rounded-full bg-ink-3 ring-4 ring-ink"
         />
         <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-black">{channel.displayName}</h1>
@@ -88,6 +103,7 @@ export default async function AboutPage({ params }: { params: Promise<{ slug: st
           <ChannelProfileEditor
             initialBio={channel.bio ?? ""}
             initialTrailer={channel.trailerUrl ?? ""}
+            initialBanner={channel.bannerUrl ?? ""}
             label="Editar perfil"
           />
         </div>
@@ -143,6 +159,16 @@ export default async function AboutPage({ params }: { params: Promise<{ slug: st
           )}
         </div>
       </section>
+
+      {/* Paneles del canal */}
+      {(panels.length > 0 || isOwner) && (
+        <section className="mt-8">
+          <h2 className="mb-3 flex items-center gap-2 text-lg font-bold">
+            <InfoIcon className="size-5 text-brand-2" /> Paneles
+          </h2>
+          <Panels panels={panels} isOwner={isOwner} />
+        </section>
+      )}
 
       {/* Últimos directos */}
       <section className="mt-8">

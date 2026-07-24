@@ -22,6 +22,13 @@ interface PlayerProps {
 interface Level {
   index: number;
   height: number;
+  fps: number;
+}
+
+/** Etiqueta de calidad estilo Twitch: 1080p60 / 720p / … */
+function qualityLabel(l: Level): string {
+  const fps = l.fps >= 50 ? String(Math.round(l.fps)) : "";
+  return `${l.height}p${fps}`;
 }
 
 function fmt(s: number): string {
@@ -117,21 +124,30 @@ export function Player({ src, poster, live = false }: PlayerProps) {
 
     if (!isHls) {
       video.src = src;
-    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      video.src = src;
     } else if (Hls.isSupported()) {
+      // Preferimos hls.js: da control de calidad/FPS (el HLS nativo no lo expone).
       hls = new Hls({ enableWorker: true, lowLatencyMode: true });
       hlsRef.current = hls;
       hls.loadSource(src);
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         setLevels(
-          hls!.levels.map((l, index) => ({ index, height: l.height })).filter((l) => l.height > 0).reverse(),
+          hls!.levels
+            .map((l, index) => ({
+              index,
+              height: l.height,
+              fps: l.frameRate || Number(l.attrs?.["FRAME-RATE"]) || 0,
+            }))
+            .filter((l) => l.height > 0)
+            .reverse(),
         );
       });
       hls.on(Hls.Events.ERROR, (_e, data) => {
         if (data.fatal) setError("No se pudo cargar la emisión. Reintentando…");
       });
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      // Safari / iOS: HLS nativo (sin selector de calidad).
+      video.src = src;
     } else {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setError("Tu navegador no soporta este vídeo.");
@@ -355,7 +371,12 @@ export function Player({ src, poster, live = false }: PlayerProps) {
                 >
                   <SettingsIcon className="size-5" />
                   <span className="hidden sm:inline">
-                    {level === -1 ? "Auto" : `${levels.find((l) => l.index === level)?.height}p`}
+                    {level === -1
+                      ? "Auto"
+                      : (() => {
+                          const l = levels.find((x) => x.index === level);
+                          return l ? qualityLabel(l) : "";
+                        })()}
                   </span>
                 </button>
                 {menu && (
@@ -372,7 +393,7 @@ export function Player({ src, poster, live = false }: PlayerProps) {
                         onClick={() => setQuality(l.index)}
                         className={`block w-full px-3 py-1.5 text-left hover:bg-ink-3 ${level === l.index ? "text-brand-2" : ""}`}
                       >
-                        {l.height}p
+                        {qualityLabel(l)}
                       </button>
                     ))}
                   </div>

@@ -15,9 +15,11 @@ export const dynamic = "force-dynamic";
 
 function Section({ title, desc, children }: { title: string; desc?: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-xl border border-edge bg-ink-2 p-5">
-      <h2 className="text-lg font-bold">{title}</h2>
-      {desc && <p className="mt-1 text-sm text-muted">{desc}</p>}
+    <section className="card p-5 shadow-soft">
+      <h2 className="flex items-center gap-2 text-lg font-bold">
+        <span className="h-5 w-1 rounded-full bg-brand" /> {title}
+      </h2>
+      {desc && <p className="mt-1 pl-3 text-sm text-muted">{desc}</p>}
       <div className="mt-4">{children}</div>
     </section>
   );
@@ -77,9 +79,9 @@ export default async function DashboardPage() {
           { k: "Categoría", v: channel.category },
           { k: "Moderadores", v: String(moderators.length) },
         ].map((s) => (
-          <div key={s.k} className="rounded-lg border border-edge bg-ink-2 p-3">
-            <p className="text-xs text-muted">{s.k}</p>
-            <p className="truncate text-lg font-bold">{s.v}</p>
+          <div key={s.k} className="card p-3.5">
+            <p className="text-xs uppercase tracking-wide text-muted">{s.k}</p>
+            <p className="mt-0.5 truncate text-xl font-black tabular-nums">{s.v}</p>
           </div>
         ))}
       </div>

@@ -23,7 +23,7 @@ export function AuthForm() {
   const [state, formAction] = useActionState<AuthState, FormData>(action, {});
 
   return (
-    <div className="rounded-xl border border-edge bg-ink-2 p-6">
+    <div className="rounded-xl2 border border-edge bg-ink-2 p-6">
       <div className="mb-5 grid grid-cols-2 gap-1 rounded-lg bg-ink-3 p-1">
         <button
           onClick={() => setMode("login")}

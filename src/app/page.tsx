@@ -73,9 +73,11 @@ export default async function HomePage() {
         <h2 className="mb-5 flex items-center gap-2 text-xl font-bold text-balance">
           <span className="h-5 w-1 rounded-full bg-brand" /> {t("home.popular")}
         </h2>
-        <div className="grid animate-in grid-cols-1 gap-x-5 gap-y-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {rest.map((c) => (
-            <ChannelCard key={c.slug} channel={c} />
+        <div className="grid grid-cols-1 gap-x-5 gap-y-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {rest.map((c, i) => (
+            <div key={c.slug} className="animate-in" style={{ animationDelay: `${Math.min(i, 8) * 60}ms` }}>
+              <ChannelCard channel={c} />
+            </div>
           ))}
         </div>
       </section>

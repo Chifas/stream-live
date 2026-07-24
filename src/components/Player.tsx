@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
+import { PipIcon, MaximizeIcon } from "./icons";
 
 interface PlayerProps {
   src: string;
@@ -141,17 +142,17 @@ export function Player({ src, poster }: PlayerProps) {
           onClick={togglePiP}
           aria-label="Picture in picture"
           title="Picture in picture"
-          className="pointer-events-auto rounded bg-black/70 px-2 py-1 text-xs text-white hover:bg-black/90"
+          className="pointer-events-auto grid size-7 place-items-center rounded bg-black/70 text-white hover:bg-black/90"
         >
-          ⧉
+          <PipIcon className="size-4" />
         </button>
         <button
           onClick={toggleFullscreen}
           aria-label="Pantalla completa"
           title="Pantalla completa"
-          className="pointer-events-auto rounded bg-black/70 px-2 py-1 text-xs text-white hover:bg-black/90"
+          className="pointer-events-auto grid size-7 place-items-center rounded bg-black/70 text-white hover:bg-black/90"
         >
-          ⛶
+          <MaximizeIcon className="size-4" />
         </button>
       </div>
 

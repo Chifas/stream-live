@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ChatMessage, Role, ServerEvent } from "@/lib/types";
 import { useT } from "@/i18n/client";
+import { ShieldIcon } from "./icons";
 
 const ADJ = ["Rápido", "Épico", "Sigiloso", "Neón", "Cósmico", "Salvaje", "Turbo", "Místico"];
 const NOUN = ["Panda", "Dragon", "Halcon", "Zorro", "Buho", "Lobo", "Tigre", "Cuervo"];
@@ -259,8 +260,8 @@ export function Chat({ channel }: { channel: string }) {
       </div>
 
       {me.canModerate && (
-        <p className="border-t border-edge px-3 py-1.5 text-[11px] text-muted">
-          🛡️ {t("chat.modHint")}: <code>/timeout usuario 60</code> · <code>/ban</code> ·{" "}
+        <p className="flex flex-wrap items-center gap-x-1 border-t border-edge px-3 py-1.5 text-[11px] text-muted">
+          <ShieldIcon className="size-3.5" /> {t("chat.modHint")}: <code>/timeout usuario 60</code> · <code>/ban</code> ·{" "}
           <code>/slow 5</code> · <code>/clear</code> · <code>/mod usuario</code>
         </p>
       )}

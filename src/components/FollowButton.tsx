@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toggleFollowAction } from "@/app/actions/follow";
 import { useT } from "@/i18n/client";
+import { HeartIcon } from "./icons";
 
 export function FollowButton({
   slug,
@@ -37,7 +38,8 @@ export function FollowButton({
         following ? "bg-ink-3 text-fg hover:bg-edge" : "btn-brand"
       }`}
     >
-      {following ? `♥ ${t("channel.following")}` : `♡ ${t("channel.follow")}`}
+      <HeartIcon filled={following} className="size-4" />
+      {following ? t("channel.following") : t("channel.follow")}
     </button>
   );
 }

@@ -4,6 +4,7 @@ import { getChannels, getCategories } from "@/lib/queries";
 import { ChannelCard } from "@/components/ChannelCard";
 import { formatViewers } from "@/lib/format";
 import { getT } from "@/i18n/server";
+import { PlayIcon, ArrowRightIcon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -60,8 +61,9 @@ export default async function HomePage() {
               <span className="text-muted">{t("home.viewersNow")}</span>
             </span>
           </div>
-          <span className="btn-brand mt-5 inline-block rounded-lg px-5 py-2.5 text-sm font-semibold">
-            {t("home.live")} →
+          <span className="btn-brand mt-5 inline-flex items-center gap-1.5 rounded-lg px-5 py-2.5 text-sm font-semibold">
+            <PlayIcon className="size-4" /> {t("home.live")}
+            <ArrowRightIcon className="size-4" />
           </span>
         </div>
       </Link>

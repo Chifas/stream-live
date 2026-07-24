@@ -10,6 +10,7 @@ import { Player } from "@/components/Player";
 import { Chat } from "@/components/Chat";
 import { LiveViewers } from "@/components/LiveViewers";
 import { FollowButton } from "@/components/FollowButton";
+import { ReplayIcon, StarIcon } from "@/components/icons";
 import { formatViewers } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -102,15 +103,15 @@ export default async function ChannelPage({
               <FollowButton slug={channel.slug} initialFollowing={following} />
               <Link
                 href={`/channel/${channel.slug}/vod`}
-                className="rounded-md bg-ink-3 px-4 py-2 text-sm font-semibold text-white transition hover:bg-edge"
+                className="flex items-center gap-1.5 rounded-md bg-ink-3 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-edge"
               >
-                ▷ {t("channel.replays")}
+                <ReplayIcon className="size-4" /> {t("channel.replays")}
               </Link>
               <button
-                className="rounded-md bg-ink-3 px-4 py-2 text-sm font-semibold text-white transition hover:bg-edge"
+                className="flex items-center gap-1.5 rounded-md bg-ink-3 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-edge"
                 title="Requiere integración de pagos (Stripe) — ver MEJORAS.md"
               >
-                ★ {t("channel.subscribe")}
+                <StarIcon className="size-4" /> {t("channel.subscribe")}
               </button>
             </div>
           </div>

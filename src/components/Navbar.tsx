@@ -5,6 +5,7 @@ import { SearchBar } from "./SearchBar";
 import { ThemeToggle } from "./ThemeToggle";
 import { LocaleToggle } from "./LocaleToggle";
 import { UserMenu } from "./UserMenu";
+import { PlayIcon, BroadcastIcon } from "./icons";
 
 export async function Navbar() {
   const session = await getSession();
@@ -14,7 +15,9 @@ export async function Navbar() {
     <header className="glass sticky top-0 z-50 flex h-14 items-center justify-between gap-4 border-b border-edge/70 px-4">
       <div className="flex items-center gap-6">
         <Link href="/" className="flex items-center gap-2 font-black tracking-tight">
-          <span className="btn-brand grid size-8 place-items-center rounded-lg text-lg shadow-none">▶</span>
+          <span className="btn-brand grid size-8 place-items-center rounded-lg shadow-none">
+            <PlayIcon className="size-4" />
+          </span>
           <span className="hidden text-lg sm:block">
             Stream<span className="text-brand-2">Live</span>
           </span>
@@ -35,8 +38,9 @@ export async function Navbar() {
         <ThemeToggle />
         <Link
           href="/studio"
-          className="btn-brand hidden rounded-md px-3.5 py-1.5 text-sm font-semibold sm:block"
+          className="btn-brand hidden items-center gap-1.5 rounded-md px-3.5 py-1.5 text-sm font-semibold sm:flex"
         >
+          <BroadcastIcon className="size-4" />
           {t("nav.golive")}
         </Link>
         {session ? (

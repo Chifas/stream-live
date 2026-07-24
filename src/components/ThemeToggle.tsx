@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useT } from "@/i18n/client";
+import { SunIcon, MoonIcon } from "./icons";
 
 export function ThemeToggle() {
   const t = useT();
@@ -28,9 +29,9 @@ export function ThemeToggle() {
       onClick={toggle}
       aria-label={theme === "dark" ? t("theme.toLight") : t("theme.toDark")}
       title={theme === "dark" ? t("theme.toLight") : t("theme.toDark")}
-      className="grid h-8 w-8 place-items-center rounded-md bg-ink-3 text-sm text-muted transition hover:text-white"
+      className="grid size-8 place-items-center rounded-md bg-ink-3 text-muted transition-colors hover:text-fg"
     >
-      {theme === "dark" ? "☀️" : "🌙"}
+      {theme === "dark" ? <SunIcon className="size-4" /> : <MoonIcon className="size-4" />}
     </button>
   );
 }

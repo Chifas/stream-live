@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { SearchIcon } from "./icons";
 
 export function SearchBar({
   initial = "",
@@ -32,9 +33,9 @@ export function SearchBar({
       <button
         type="submit"
         aria-label="Buscar"
-        className="rounded-r-md border border-l-0 border-edge bg-ink-3 px-3 py-2 text-muted hover:text-white"
+        className="grid place-items-center rounded-r-md border border-l-0 border-edge bg-ink-3 px-3 py-2 text-muted transition-colors hover:text-fg"
       >
-        🔍
+        <SearchIcon className="size-4" />
       </button>
     </form>
   );

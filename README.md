@@ -99,6 +99,20 @@ src/
 
 > Sin cuentas ni claves externas: MediaMTX y OBS son gratuitos y locales.
 
+### Varias calidades (ABR, opcional)
+
+Para ofrecer **1080p/720p/480p/360p** adaptativas (que cada espectador vea la
+mejor calidad según su conexión) hay soporte de **ABR por transcodificación**:
+
+1. En `docker-compose.yml`, cambia el servicio `mediamtx` a la imagen
+   `bluenviron/mediamtx:latest-ffmpeg` montando `mediamtx-abr.yml`.
+2. Pon `MEDIAMTX_ABR=1` en el servicio `app`.
+
+MediaMTX lanzará `ffmpeg` al detectar tu directo y creará las calidades; la web
+sirve un *master playlist* (`/api/hls/[canal]`) que las combina. **Ojo:** el
+transcodificado en vivo consume mucha CPU/GPU (recomendado codificador por
+hardware). Por defecto está desactivado (passthrough de una sola calidad).
+
 ## 🐳 Docker
 
 ```bash

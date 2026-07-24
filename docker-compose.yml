@@ -15,6 +15,9 @@ services:
       - MEDIAMTX_HLS_BASE=http://localhost:8888
       - MEDIAMTX_PLAYBACK_BASE=http://localhost:9996
       - MEDIAMTX_RTMP=rtmp://localhost:1935
+      # ABR: pon a 1 y usa la variante ffmpeg de mediamtx (ver abajo) para
+      # ofrecer varias calidades (1080p/720p/480p/360p) adaptativas.
+      - MEDIAMTX_ABR=0
       # Chat con Redis pub/sub (permite escalar a varias instancias).
       - REDIS_URL=redis://redis:6379
     volumes:
@@ -44,6 +47,12 @@ services:
       - ./mediamtx.yml:/mediamtx.yml:ro
       - stream-rec:/recordings
     restart: unless-stopped
+    # --- Para ABR (múltiples calidades) sustituye las 2 líneas de arriba por: ---
+    #   image: bluenviron/mediamtx:latest-ffmpeg
+    #   volumes:
+    #     - ./mediamtx-abr.yml:/mediamtx.yml:ro
+    #     - stream-rec:/recordings
+    # …y pon MEDIAMTX_ABR=1 en el servicio app. Requiere CPU/GPU potente.
 
   # --- Servicio opcional para producción (ver MEJORAS.md) ---
   # postgres:         # BD relacional en producción (con Drizzle)

@@ -118,7 +118,8 @@ export function Player({ src, poster, live = false }: PlayerProps) {
     setReady(false);
     setError(null);
     setLevels([]);
-    const isHls = src.endsWith(".m3u8");
+    // Los m3u8 y nuestro master ABR (/api/hls/…) van por hls.js.
+    const isHls = src.endsWith(".m3u8") || src.includes("/api/hls/");
     let hls: Hls | null = null;
 
     if (!isHls) {

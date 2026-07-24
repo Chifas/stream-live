@@ -1,0 +1,44 @@
+# MediaMTX con ABR (múltiples calidades por transcodificación con ffmpeg).
+# Requiere la imagen con ffmpeg: bluenviron/mediamtx:latest-ffmpeg
+#
+# Cómo funciona: cuando llega un directo (p. ej. "nova_plays"), MediaMTX lanza
+# ffmpeg (runOnReady) que crea 3 calidades más y las re-publica como
+# nova_plays_720 / _480 / _360. La web sirve un master playlist que las combina.
+
+rtmp: yes
+rtmpAddress: :1935
+
+hls: yes
+hlsAddress: :8888
+hlsVariant: mpegts
+hlsAlwaysRemux: yes
+hlsAllowOrigin: "*"
+
+api: yes
+apiAddress: :9997
+
+record: yes
+recordPath: /recordings/%path/%Y-%m-%d_%H-%M-%S-%f
+recordFormat: fmp4
+recordSegmentDuration: 1h
+recordDeleteAfter: 168h
+
+playback: yes
+playbackAddress: :9996
+
+webrtc: yes
+webrtcAddress: :8889
+
+paths:
+  # Las variantes transcodificadas NO se vuelven a transcodificar (evita recursión).
+  ~^.+_(720|480|360)$:
+
+  # Cualquier otro path (la emisión original) dispara la transcodificación.
+  all_others:
+    runOnReadyRestart: yes
+    runOnReady: >
+      ffmpeg -nostdin -i rtmp://localhost:1935/$MTX_PATH
+      -filter_complex "[0:v]split=3[a][b][c];[a]scale=w=1280:h=720[v720];[b]scale=w=854:h=480[v480];[c]scale=w=640:h=360[v360]"
+      -map "[v720]" -map 0:a? -c:v libx264 -preset veryfast -tune zerolatency -b:v 2800k -c:a aac -b:a 128k -f flv rtmp://localhost:1935/${MTX_PATH}_720
+      -map "[v480]" -map 0:a? -c:v libx264 -preset veryfast -tune zerolatency -b:v 1400k -c:a aac -b:a 96k -f flv rtmp://localhost:1935/${MTX_PATH}_480
+      -map "[v360]" -map 0:a? -c:v libx264 -preset veryfast -tune zerolatency -b:v 800k -c:a aac -b:a 96k -f flv rtmp://localhost:1935/${MTX_PATH}_360

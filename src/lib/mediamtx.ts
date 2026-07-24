@@ -18,12 +18,39 @@ const API_BASE = process.env.MEDIAMTX_API ?? "http://localhost:9997";
 const PLAYBACK_BASE = process.env.MEDIAMTX_PLAYBACK_BASE ?? "http://localhost:9996";
 const PLAYBACK_API = process.env.MEDIAMTX_PLAYBACK_API ?? PLAYBACK_BASE;
 
+// ABR (múltiples calidades por transcodificación). Off por defecto: la demo usa
+// passthrough. Se activa con MEDIAMTX_ABR=1 y el MediaMTX con ffmpeg (ver docs).
+export const ABR_ENABLED = process.env.MEDIAMTX_ABR === "1";
+
+/** Calidades que produce el transcodificador ABR (deben coincidir con mediamtx-abr.yml). */
+const ABR_VARIANTS = [
+  { suffix: "", bandwidth: 5200000, resolution: "1920x1080" },
+  { suffix: "_720", bandwidth: 2800000, resolution: "1280x720" },
+  { suffix: "_480", bandwidth: 1400000, resolution: "854x480" },
+  { suffix: "_360", bandwidth: 800000, resolution: "640x360" },
+];
+
 export function ingestUrl(): string {
   return RTMP_BASE;
 }
 
 export function hlsUrlFor(streamKey: string): string {
   return `${HLS_BASE}/${streamKey}/index.m3u8`;
+}
+
+/** URL de reproducción que usa la web: master ABR si está activado, o HLS directo. */
+export function watchUrlFor(streamKey: string): string {
+  return ABR_ENABLED ? `/api/hls/${encodeURIComponent(streamKey)}` : hlsUrlFor(streamKey);
+}
+
+/** Master playlist HLS que combina las calidades del ABR (lo sirve /api/hls/[key]). */
+export function buildMasterPlaylist(streamKey: string): string {
+  const lines = ["#EXTM3U", "#EXT-X-VERSION:3"];
+  for (const v of ABR_VARIANTS) {
+    lines.push(`#EXT-X-STREAM-INF:BANDWIDTH=${v.bandwidth},RESOLUTION=${v.resolution}`);
+    lines.push(`${HLS_BASE}/${streamKey}${v.suffix}/index.m3u8`);
+  }
+  return lines.join("\n") + "\n";
 }
 
 /**

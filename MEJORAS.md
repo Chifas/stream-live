@@ -54,7 +54,9 @@ Estado del proyecto y hoja de ruta. Marcado ✅ lo ya implementado en el repo.
 - [x] ~~Media server de ingesta (MediaMTX, RTMP→HLS)~~ ✅ hecho.
 - [ ] **Baja latencia** con LL-HLS o **WebRTC** (WHIP/WHEP) — MediaMTX ya expone WebRTC.
 - [x] ~~Grabación/VOD (repeticiones)~~ ✅ hecho (MediaMTX record + playback).
-- [ ] **ABR** (múltiples calidades de transcodificación).
+- [x] ~~ABR (múltiples calidades)~~ ✅ montado y documentado (ffmpeg vía
+      `mediamtx-abr.yml` + master playlist en `/api/hls/[canal]`, activable con
+      `MEDIAMTX_ABR=1`). Requiere servidor con CPU/GPU potente.
 - [ ] **Miniaturas en vivo** capturadas del stream.
 - [ ] **Emotes nativos de Twitch** (primera parte) — requiere la API de Twitch
       (client-id/secret); los de 7TV/BTTV/FFZ ya funcionan.

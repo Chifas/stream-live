@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getChannel, isFollowing } from "@/lib/queries";
-import { isPathLive, hlsUrlFor } from "@/lib/mediamtx";
+import { isPathLive, watchUrlFor } from "@/lib/mediamtx";
 import { getSession } from "@/lib/session";
 import { getT } from "@/i18n/server";
 import { Player } from "@/components/Player";
@@ -45,7 +45,7 @@ export default async function ChannelPage({
 
   // Emisión real (MediaMTX) si hay directo; si no, stream HLS de demo.
   const liveNow = await isPathLive(channel.streamKey);
-  const videoSrc = liveNow ? hlsUrlFor(channel.streamKey!) : channel.hlsUrl;
+  const videoSrc = liveNow ? watchUrlFor(channel.streamKey!) : channel.hlsUrl;
 
   return (
     <div className="flex flex-col lg:h-[calc(100dvh-3.5rem)] lg:flex-row">

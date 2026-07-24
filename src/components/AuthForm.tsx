@@ -28,7 +28,7 @@ export function AuthForm() {
         <button
           onClick={() => setMode("login")}
           className={`rounded-md py-1.5 text-sm font-semibold transition ${
-            mode === "login" ? "bg-brand text-white" : "text-muted hover:text-white"
+            mode === "login" ? "bg-brand text-white" : "text-muted hover:text-fg"
           }`}
         >
           Entrar
@@ -36,7 +36,7 @@ export function AuthForm() {
         <button
           onClick={() => setMode("register")}
           className={`rounded-md py-1.5 text-sm font-semibold transition ${
-            mode === "register" ? "bg-brand text-white" : "text-muted hover:text-white"
+            mode === "register" ? "bg-brand text-white" : "text-muted hover:text-fg"
           }`}
         >
           Crear cuenta

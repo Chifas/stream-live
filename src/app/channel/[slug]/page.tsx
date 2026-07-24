@@ -67,7 +67,7 @@ export default async function ChannelPage({
               <div className="flex items-center gap-2">
                 <h1 className="text-lg font-bold">{channel.displayName}</h1>
               </div>
-              <p className="mt-0.5 text-sm text-white">{channel.title}</p>
+              <p className="mt-0.5 text-sm text-fg">{channel.title}</p>
               <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
                 <Link
                   href={`/browse`}
@@ -133,7 +133,7 @@ export default async function ChannelPage({
             <h2 className="mb-2 text-sm font-bold uppercase tracking-wide text-muted">
               {t("channel.about")} {channel.displayName}
             </h2>
-            <p className="text-sm text-white/90">{channel.about}</p>
+            <p className="text-sm text-fg/90">{channel.about}</p>
             <p className="mt-3 text-sm text-muted">
               {formatViewers(channel.followers)} {t("common.followers")} ·{" "}
               {t("channel.language")}: {channel.language}

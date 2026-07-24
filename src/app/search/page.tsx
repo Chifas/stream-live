@@ -19,7 +19,7 @@ export default async function SearchPage({
         {q ? (
           <>
             {results.length} resultado{results.length === 1 ? "" : "s"} para{" "}
-            <span className="text-white">“{q}”</span>
+            <span className="text-fg">“{q}”</span>
           </>
         ) : (
           "Escribe algo en la barra de búsqueda."

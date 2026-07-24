@@ -229,7 +229,7 @@ export function Chat({ channel }: { channel: string }) {
           ) : (
             <p
               key={it.msg.id}
-              className="group/msg break-words rounded-md px-1.5 py-1 leading-snug transition-colors hover:bg-white/[0.05]"
+              className="group/msg break-words rounded-md px-1.5 py-1 leading-snug transition-colors hover:bg-fg/[0.06]"
             >
               <span
                 aria-hidden

@@ -25,10 +25,10 @@ export async function Navbar() {
           </span>
         </Link>
         <nav aria-label="Navegación principal" className="hidden items-center gap-4 text-sm text-muted md:flex">
-          <Link href="/" className="hover:text-white">{t("nav.explore")}</Link>
-          <Link href="/browse" className="hover:text-white">{t("nav.categories")}</Link>
+          <Link href="/" className="hover:text-fg">{t("nav.explore")}</Link>
+          <Link href="/browse" className="hover:text-fg">{t("nav.categories")}</Link>
           {session && (
-            <Link href="/following" className="hover:text-white">{t("nav.following")}</Link>
+            <Link href="/following" className="hover:text-fg">{t("nav.following")}</Link>
           )}
         </nav>
       </div>
@@ -55,7 +55,7 @@ export async function Navbar() {
         ) : (
           <Link
             href="/login"
-            className="rounded-md bg-ink-3 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-edge"
+            className="rounded-md bg-ink-3 px-3 py-1.5 text-sm font-semibold text-fg transition hover:bg-edge"
           >
             {t("nav.login")}
           </Link>

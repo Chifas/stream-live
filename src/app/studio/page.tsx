@@ -16,7 +16,7 @@ export default async function StudioPage() {
     <div className="mx-auto max-w-3xl p-6">
       <h1 className="text-2xl font-black">Studio del creador</h1>
       <p className="mt-2 text-muted">
-        Emite en directo <span className="text-white">de verdad</span> con OBS y
+        Emite en directo <span className="text-fg">de verdad</span> con OBS y
         el media server <span className="text-brand-2">MediaMTX</span> (gratis, sin
         cuentas). Levántalo con <code className="text-brand-2">docker compose up</code>.
       </p>
@@ -73,7 +73,7 @@ export default async function StudioPage() {
             <h2 className="mb-2 text-sm font-bold uppercase tracking-wide text-muted">
               Tubería completa
             </h2>
-            <ol className="list-decimal space-y-1 pl-5 text-sm text-white/90">
+            <ol className="list-decimal space-y-1 pl-5 text-sm text-fg/90">
               <li>OBS envía RTMP a <code>{ingestUrl()}</code>.</li>
               <li>MediaMTX transcodifica a HLS y expone <code>/{channel.streamKey}/index.m3u8</code>.</li>
               <li>La web detecta el directo por la API de MediaMTX y lo reproduce.</li>

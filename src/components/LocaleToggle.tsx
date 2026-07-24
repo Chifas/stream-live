@@ -25,7 +25,7 @@ export function LocaleToggle() {
       disabled={pending}
       aria-label="Idioma / Language"
       title="Idioma / Language"
-      className="grid h-8 w-9 place-items-center rounded-md bg-ink-3 text-xs font-bold text-muted transition hover:text-white disabled:opacity-50"
+      className="grid h-8 w-9 place-items-center rounded-md bg-ink-3 text-xs font-bold text-muted transition hover:text-fg disabled:opacity-50"
     >
       {locale.toUpperCase()}
     </button>

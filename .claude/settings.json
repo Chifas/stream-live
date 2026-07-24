@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo pre-fired >> /tmp/claude-hook-check.txt; node .claude/hooks/guard-secrets.cjs",
+            "statusMessage": "Checking for protected files..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo post-fired >> /tmp/claude-hook-check.txt; node .claude/hooks/format-on-edit.cjs",
+            "statusMessage": "Formatting and linting..."
+          }
+        ]
+      }
+    ]
+  }
+}

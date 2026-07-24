@@ -36,7 +36,7 @@ export function CopyField({
         {secret && (
           <button
             onClick={() => setRevealed((v) => !v)}
-            className="rounded bg-ink-3 px-2 py-2 text-xs text-muted hover:text-white"
+            className="rounded bg-ink-3 px-2 py-2 text-xs text-muted hover:text-fg"
             aria-label={revealed ? "Ocultar" : "Mostrar"}
           >
             {revealed ? "🙈" : "👁️"}

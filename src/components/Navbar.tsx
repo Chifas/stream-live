@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getSession } from "@/lib/session";
+import { getChannelByOwner } from "@/lib/queries";
 import { getT } from "@/i18n/server";
 import { SearchBar } from "./SearchBar";
 import { ThemeToggle } from "./ThemeToggle";
@@ -10,6 +11,7 @@ import { PlayIcon, BroadcastIcon } from "./icons";
 export async function Navbar() {
   const session = await getSession();
   const t = await getT();
+  const ownedChannel = session ? await getChannelByOwner(session.userId) : undefined;
 
   return (
     <header className="glass sticky top-0 z-50 flex h-14 items-center justify-between gap-4 border-b border-edge/70 px-4">
@@ -44,7 +46,12 @@ export async function Navbar() {
           {t("nav.golive")}
         </Link>
         {session ? (
-          <UserMenu username={session.username} color={session.color} role={session.role} />
+          <UserMenu
+            username={session.username}
+            color={session.color}
+            role={session.role}
+            channelSlug={ownedChannel?.slug}
+          />
         ) : (
           <Link
             href="/login"

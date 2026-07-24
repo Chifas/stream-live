@@ -5,16 +5,18 @@ import Link from "next/link";
 import { logoutAction } from "@/app/actions/auth";
 import { useT } from "@/i18n/client";
 import type { Role } from "@/lib/types";
-import { ChevronDownIcon, SlidersIcon, BroadcastIcon, HeartIcon, LogOutIcon } from "./icons";
+import { ChevronDownIcon, SlidersIcon, BroadcastIcon, HeartIcon, LogOutIcon, VideoIcon } from "./icons";
 
 export function UserMenu({
   username,
   color,
   role,
+  channelSlug,
 }: {
   username: string;
   color: string;
   role: Role;
+  channelSlug?: string;
 }) {
   const t = useT();
   const [open, setOpen] = useState(false);
@@ -54,6 +56,15 @@ export function UserMenu({
               <p className="truncate text-sm font-semibold">{username}</p>
               <p className="text-xs capitalize text-muted">{role}</p>
             </div>
+            {channelSlug ? (
+              <Link href={`/channel/${channelSlug}`} onClick={() => setOpen(false)} className="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-ink-3">
+                <VideoIcon className="size-4 text-muted" /> Mi canal
+              </Link>
+            ) : (
+              <Link href="/dashboard" onClick={() => setOpen(false)} className="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-ink-3">
+                <VideoIcon className="size-4 text-muted" /> Crear mi canal
+              </Link>
+            )}
             <Link href="/dashboard" onClick={() => setOpen(false)} className="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-ink-3">
               <SlidersIcon className="size-4 text-muted" /> {t("menu.dashboard")}
             </Link>

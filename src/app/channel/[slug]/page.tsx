@@ -11,6 +11,7 @@ import { Chat } from "@/components/Chat";
 import { LiveViewers } from "@/components/LiveViewers";
 import { FollowButton } from "@/components/FollowButton";
 import { ReplayIcon, StarIcon, InfoIcon } from "@/components/icons";
+import { ChannelTabs } from "@/components/ChannelTabs";
 import { formatViewers } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -121,6 +122,10 @@ export default async function ChannelPage({
               </button>
             </div>
           </div>
+        </div>
+
+        <div className="px-4">
+          <ChannelTabs slug={channel.slug} active="live" />
         </div>
 
         <div className="px-4 py-4">

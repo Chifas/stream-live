@@ -1,9 +1,10 @@
-import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getChannel } from "@/lib/queries";
 import { listRecordings } from "@/lib/mediamtx";
 import { VodList } from "@/components/VodList";
+import { ChannelTabs } from "@/components/ChannelTabs";
 
 export const dynamic = "force-dynamic";
 
@@ -26,14 +27,19 @@ export default async function VodPage({ params }: { params: Promise<{ slug: stri
 
   return (
     <div className="mx-auto max-w-[1400px] p-4 sm:p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-black">Repeticiones de {channel.displayName}</h1>
-        <Link
-          href={`/channel/${channel.slug}`}
-          className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-2"
-        >
-          Ver directo
-        </Link>
+      <div className="mb-4 flex items-center gap-3">
+        <Image
+          src={channel.avatarUrl}
+          alt={channel.displayName}
+          width={40}
+          height={40}
+          unoptimized
+          className="size-10 rounded-full bg-ink-3 ring-2 ring-brand"
+        />
+        <h1 className="text-xl font-black">{channel.displayName}</h1>
+      </div>
+      <div className="mb-6">
+        <ChannelTabs slug={channel.slug} active="vod" />
       </div>
 
       {recordings.length > 0 ? (

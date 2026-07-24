@@ -9,6 +9,7 @@ import { Player } from "@/components/Player";
 import { FollowButton } from "@/components/FollowButton";
 import { ChannelProfileEditor } from "@/components/ChannelProfileEditor";
 import { Panels } from "@/components/Panels";
+import { ChannelTabs } from "@/components/ChannelTabs";
 import { VideoIcon, InfoIcon, ReplayIcon } from "@/components/icons";
 import { formatViewers } from "@/lib/format";
 
@@ -22,19 +23,6 @@ export async function generateMetadata({
   const { slug } = await params;
   const channel = await getChannel(slug);
   return { title: channel ? `Sobre ${channel.displayName}` : "Canal" };
-}
-
-function Tab({ href, active, children }: { href: string; active?: boolean; children: React.ReactNode }) {
-  return (
-    <Link
-      href={href}
-      className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-colors ${
-        active ? "bg-ink-3 text-fg" : "text-muted hover:text-fg"
-      }`}
-    >
-      {children}
-    </Link>
-  );
 }
 
 export default async function AboutPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -87,10 +75,8 @@ export default async function AboutPage({ params }: { params: Promise<{ slug: st
       </div>
 
       {/* Sub-navegación */}
-      <div className="mt-4 flex gap-1 border-b border-edge pb-3">
-        <Tab href={`/channel/${channel.slug}`}>Directo</Tab>
-        <Tab href={`/channel/${channel.slug}/about`} active>Sobre el canal</Tab>
-        <Tab href={`/channel/${channel.slug}/vod`}>Vídeos</Tab>
+      <div className="mt-4">
+        <ChannelTabs slug={channel.slug} active="about" />
       </div>
 
       {isOwner && (

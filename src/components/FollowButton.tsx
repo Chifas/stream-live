@@ -34,9 +34,7 @@ export function FollowButton({
       disabled={pending}
       aria-pressed={following}
       className={`flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-semibold transition disabled:opacity-60 ${
-        following
-          ? "bg-ink-3 text-white hover:bg-edge"
-          : "bg-brand text-white hover:bg-brand-2"
+        following ? "bg-ink-3 text-fg hover:bg-edge" : "btn-brand"
       }`}
     >
       {following ? `♥ ${t("channel.following")}` : `♡ ${t("channel.follow")}`}

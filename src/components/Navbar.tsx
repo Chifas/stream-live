@@ -11,10 +11,10 @@ export async function Navbar() {
   const t = await getT();
 
   return (
-    <header className="sticky top-0 z-50 flex h-14 items-center justify-between gap-4 border-b border-edge bg-ink-2 px-4">
+    <header className="glass sticky top-0 z-50 flex h-14 items-center justify-between gap-4 border-b border-edge/70 px-4">
       <div className="flex items-center gap-6">
         <Link href="/" className="flex items-center gap-2 font-black tracking-tight">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand text-lg">▶</span>
+          <span className="btn-brand grid size-8 place-items-center rounded-lg text-lg shadow-none">▶</span>
           <span className="hidden text-lg sm:block">
             Stream<span className="text-brand-2">Live</span>
           </span>
@@ -35,7 +35,7 @@ export async function Navbar() {
         <ThemeToggle />
         <Link
           href="/studio"
-          className="hidden rounded-md bg-brand px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-brand-2 sm:block"
+          className="btn-brand hidden rounded-md px-3.5 py-1.5 text-sm font-semibold sm:block"
         >
           {t("nav.golive")}
         </Link>

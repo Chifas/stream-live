@@ -10,7 +10,7 @@ function SubmitButton({ label }: { label: string }) {
     <button
       type="submit"
       disabled={pending}
-      className="w-full rounded-md bg-brand py-2.5 font-semibold text-white transition hover:bg-brand-2 disabled:opacity-50"
+      className="btn-brand w-full rounded-md py-2.5 font-semibold disabled:opacity-50"
     >
       {pending ? "Un momento…" : label}
     </button>

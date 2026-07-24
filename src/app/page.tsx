@@ -21,44 +21,57 @@ export default async function HomePage() {
       {/* Hero destacado */}
       <Link
         href={`/channel/${featured.slug}`}
-        className="group relative mb-8 flex flex-col gap-4 overflow-hidden rounded-xl border border-edge bg-gradient-to-r from-ink-3 to-ink-2 p-4 md:flex-row md:items-center md:p-6"
+        className="group relative mb-10 block overflow-hidden rounded-xl2 border border-edge/70"
       >
         <Image
           src={featured.thumbnailUrl}
           alt={featured.title}
-          width={640}
-          height={360}
+          width={1280}
+          height={520}
           unoptimized
-          className="aspect-video w-full rounded-lg object-cover md:w-96"
+          className="h-[300px] w-full object-cover md:h-[420px]"
         />
-        <div className="min-w-0 flex-1">
-          <span className="inline-flex items-center gap-1 rounded bg-live px-2 py-0.5 text-xs font-bold uppercase text-white">
-            <span className="h-1.5 w-1.5 rounded-full bg-white live-dot" /> {t("home.live")}
+        {/* Capas de degradado para el texto (acento moderno). */}
+        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-brand/25 via-transparent to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 p-5 sm:p-8">
+          <span className="inline-flex items-center gap-1.5 rounded-md bg-live px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-soft">
+            <span className="size-1.5 rounded-full bg-white live-dot" /> {t("home.live")}
           </span>
-          <h1 className="mt-3 text-2xl font-black md:text-3xl">{featured.title}</h1>
-          <p className="mt-2 flex items-center gap-2 text-muted">
-            <Image
-              src={featured.avatarUrl}
-              alt={featured.displayName}
-              width={28}
-              height={28}
-              unoptimized
-              className="h-7 w-7 rounded-full bg-ink-3"
-            />
-            <span className="font-semibold text-white">{featured.displayName}</span>
-            · {featured.category}
-          </p>
-          <p className="mt-3 max-w-xl text-sm text-muted">{featured.about}</p>
-          <p className="mt-3 text-sm font-semibold text-brand-2">
-            {formatViewers(featured.baseViewers)} {t("home.viewersNow")}
-          </p>
+          <h1 className="mt-3 max-w-3xl text-balance text-3xl font-black leading-tight md:text-5xl">
+            {featured.title}
+          </h1>
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+            <span className="flex items-center gap-2">
+              <Image
+                src={featured.avatarUrl}
+                alt={featured.displayName}
+                width={32}
+                height={32}
+                unoptimized
+                className="size-8 rounded-full bg-ink-3 ring-2 ring-brand/60"
+              />
+              <span className="font-semibold text-fg">{featured.displayName}</span>
+            </span>
+            <span className="text-muted">· {featured.category}</span>
+            <span className="flex items-center gap-1.5 font-semibold text-live">
+              <span className="size-2 rounded-full bg-live live-dot" />
+              <span className="tabular-nums">{formatViewers(featured.baseViewers)}</span>
+              <span className="text-muted">{t("home.viewersNow")}</span>
+            </span>
+          </div>
+          <span className="btn-brand mt-5 inline-block rounded-lg px-5 py-2.5 text-sm font-semibold">
+            {t("home.live")} →
+          </span>
         </div>
       </Link>
 
       {/* Directos */}
-      <section className="mb-10">
-        <h2 className="mb-4 text-xl font-bold">{t("home.popular")}</h2>
-        <div className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <section className="mb-12">
+        <h2 className="mb-5 flex items-center gap-2 text-xl font-bold text-balance">
+          <span className="h-5 w-1 rounded-full bg-brand" /> {t("home.popular")}
+        </h2>
+        <div className="grid animate-in grid-cols-1 gap-x-5 gap-y-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {rest.map((c) => (
             <ChannelCard key={c.slug} channel={c} />
           ))}
@@ -67,9 +80,11 @@ export default async function HomePage() {
 
       {/* Categorías */}
       <section>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold">{t("home.categories")}</h2>
-          <Link href="/browse" className="text-sm text-brand-2 hover:underline">
+        <div className="mb-5 flex items-center justify-between">
+          <h2 className="flex items-center gap-2 text-xl font-bold">
+            <span className="h-5 w-1 rounded-full bg-accent" /> {t("home.categories")}
+          </h2>
+          <Link href="/browse" className="text-sm font-semibold text-brand-2 hover:underline">
             {t("home.seeAll")}
           </Link>
         </div>
@@ -80,16 +95,20 @@ export default async function HomePage() {
               href={`/search?q=${encodeURIComponent(cat.name)}`}
               className="group"
             >
-              <Image
-                src={cat.coverUrl}
-                alt={cat.name}
-                width={640}
-                height={360}
-                unoptimized
-                className="aspect-[3/4] w-full rounded-md object-cover transition group-hover:brightness-110"
-              />
-              <p className="mt-1 truncate text-sm font-semibold">{cat.name}</p>
-              <p className="text-xs text-muted">{formatViewers(cat.viewers)} esp.</p>
+              <div className="lift overflow-hidden rounded-xl2 ring-1 ring-edge/70">
+                <Image
+                  src={cat.coverUrl}
+                  alt={cat.name}
+                  width={640}
+                  height={360}
+                  unoptimized
+                  className="aspect-[3/4] w-full object-cover"
+                />
+              </div>
+              <p className="mt-2 truncate text-sm font-semibold">{cat.name}</p>
+              <p className="text-xs tabular-nums text-muted">
+                {formatViewers(cat.viewers)} esp.
+              </p>
             </Link>
           ))}
         </div>

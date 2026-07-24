@@ -77,12 +77,16 @@ export function Chat({ channel }: { channel: string }) {
   const [items, setItems] = useState<Item[]>([]);
   const [input, setInput] = useState("");
   const [connected, setConnected] = useState(false);
-  const [me, setMe] = useState<{ username: string; role: Role; canModerate: boolean }>({
-    username: "invitado",
-    role: "viewer",
-    canModerate: false,
-  });
+  const [me, setMe] = useState<{
+    username: string;
+    role: Role;
+    canModerate: boolean;
+    canManageMods: boolean;
+  }>({ username: "invitado", role: "viewer", canModerate: false, canManageMods: false });
   const [emotes, setEmotes] = useState<EmoteMap>({});
+  // Menú contextual al pulsar un nombre de usuario del chat.
+  const [userMenu, setUserMenu] = useState<{ name: string; x: number; y: number } | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Emotes personalizados globales (7TV/BTTV/FFZ), cargados una vez.
   useEffect(() => {
@@ -130,7 +134,12 @@ export function Chat({ channel }: { channel: string }) {
         const data: ServerEvent = JSON.parse(evt.data);
         switch (data.type) {
           case "welcome":
-            setMe({ username: data.username, role: data.role, canModerate: data.canModerate });
+            setMe({
+              username: data.username,
+              role: data.role,
+              canModerate: data.canModerate,
+              canManageMods: data.canManageMods,
+            });
             break;
           case "history":
             setItems(data.messages.map((msg) => ({ kind: "msg", msg })));
@@ -198,6 +207,22 @@ export function Chat({ channel }: { channel: string }) {
     atBottomRef.current = true;
   }
 
+  /** Envía un comando de chat (p. ej. /ban usuario) sin tocar el input. */
+  function sendCommand(text: string) {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({ type: "chat", text }));
+      atBottomRef.current = true;
+    }
+    setUserMenu(null);
+  }
+
+  /** Inserta una mención @usuario en el input y enfoca. */
+  function mention(name: string) {
+    setInput((prev) => `${prev}@${name} `.replace(/^\s+/, ""));
+    setUserMenu(null);
+    inputRef.current?.focus();
+  }
+
   return (
     <div className="flex h-full flex-col bg-ink-2">
       <div className="flex items-center justify-between border-b border-edge px-4 py-3">
@@ -250,9 +275,16 @@ export function Chat({ channel }: { channel: string }) {
                   MOD
                 </span>
               )}
-              <span className="font-semibold" style={{ color: it.msg.color }}>
+              <button
+                type="button"
+                onClick={(e) =>
+                  setUserMenu({ name: it.msg.user, x: e.clientX, y: e.clientY })
+                }
+                className="font-semibold hover:underline"
+                style={{ color: it.msg.color }}
+              >
                 {it.msg.user}
-              </span>
+              </button>
               {it.msg.action ? (
                 <span className="italic text-muted">
                   {" "}
@@ -279,6 +311,7 @@ export function Chat({ channel }: { channel: string }) {
       <form onSubmit={sendMessage} className="border-t border-edge p-3">
         <div className="flex items-center gap-2">
           <input
+            ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             maxLength={300}
@@ -295,6 +328,82 @@ export function Chat({ channel }: { channel: string }) {
           </button>
         </div>
       </form>
+
+      {/* Menú contextual del usuario del chat */}
+      {userMenu && (
+        <>
+          <button
+            aria-hidden
+            tabIndex={-1}
+            onClick={() => setUserMenu(null)}
+            className="fixed inset-0 z-40 cursor-default"
+          />
+          <div
+            role="menu"
+            className="fixed z-50 w-52 overflow-hidden rounded-lg border border-edge bg-ink-2 py-1 text-sm shadow-xl"
+            style={{
+              left: Math.min(userMenu.x, (typeof window !== "undefined" ? window.innerWidth : 400) - 220),
+              top: Math.min(userMenu.y, (typeof window !== "undefined" ? window.innerHeight : 800) - 260),
+            }}
+          >
+            <div className="truncate border-b border-edge px-3 py-2 font-bold">
+              {userMenu.name}
+            </div>
+            <button
+              onClick={() => mention(userMenu.name)}
+              className="block w-full px-3 py-2 text-left hover:bg-ink-3"
+            >
+              💬 Mencionar
+            </button>
+
+            {me.canModerate && userMenu.name !== me.username && (
+              <div className="border-t border-edge">
+                <button
+                  onClick={() => sendCommand(`/timeout ${userMenu.name} 300`)}
+                  className="block w-full px-3 py-2 text-left hover:bg-ink-3"
+                >
+                  ⏳ Silenciar 5 min
+                </button>
+                <button
+                  onClick={() => sendCommand(`/timeout ${userMenu.name} 600`)}
+                  className="block w-full px-3 py-2 text-left hover:bg-ink-3"
+                >
+                  ⏳ Silenciar 10 min
+                </button>
+                <button
+                  onClick={() => sendCommand(`/ban ${userMenu.name}`)}
+                  className="block w-full px-3 py-2 text-left text-live hover:bg-ink-3"
+                >
+                  🔨 Expulsar (ban)
+                </button>
+                <button
+                  onClick={() => sendCommand(`/unban ${userMenu.name}`)}
+                  className="block w-full px-3 py-2 text-left hover:bg-ink-3"
+                >
+                  ✅ Readmitir
+                </button>
+              </div>
+            )}
+
+            {me.canManageMods && userMenu.name !== me.username && (
+              <div className="border-t border-edge">
+                <button
+                  onClick={() => sendCommand(`/mod ${userMenu.name}`)}
+                  className="block w-full px-3 py-2 text-left hover:bg-ink-3"
+                >
+                  🛡️ Hacer moderador
+                </button>
+                <button
+                  onClick={() => sendCommand(`/unmod ${userMenu.name}`)}
+                  className="block w-full px-3 py-2 text-left hover:bg-ink-3"
+                >
+                  Quitar moderador
+                </button>
+              </div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }

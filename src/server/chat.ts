@@ -167,6 +167,7 @@ async function join(client: Client, channel: string, guestName?: string) {
     username: client.user,
     role: client.role,
     canModerate: !!client.canModerate,
+    canManageMods: client.role === "admin" || !!client.isOwner,
   });
   send(client, { type: "history", messages: await loadHistory(channel) });
   deliverLocal(channel, { type: "viewers", count: viewerCount(channel) });

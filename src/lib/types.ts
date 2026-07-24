@@ -43,7 +43,7 @@ export type ClientEvent =
 
 /** Mensajes que el servidor envía al cliente */
 export type ServerEvent =
-  | { type: "welcome"; username: string; role: Role; canModerate: boolean }
+  | { type: "welcome"; username: string; role: Role; canModerate: boolean; canManageMods: boolean }
   | { type: "history"; messages: ChatMessage[] }
   | { type: "chat"; message: ChatMessage }
   | { type: "system"; text: string; level?: "info" | "error" }

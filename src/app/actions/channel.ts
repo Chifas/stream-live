@@ -72,6 +72,26 @@ export async function updateModerationAction(
   return { ok: true };
 }
 
+export async function updateProfileAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  const owned = await ownedChannel();
+  if (!owned) return { error: "No tienes ningún canal." };
+
+  const bio = String(formData.get("bio") ?? "").trim().slice(0, 2000);
+  const trailerUrl = String(formData.get("trailerUrl") ?? "").trim().slice(0, 500);
+  if (trailerUrl && !/^https?:\/\//i.test(trailerUrl)) {
+    return { error: "El enlace del tráiler debe empezar por http(s)://" };
+  }
+
+  const db = await getDb();
+  await db
+    .update(channels)
+    .set({ bio: bio || null, trailerUrl: trailerUrl || null })
+    .where(eq(channels.id, owned.channel.id));
+
+  revalidatePath(`/channel/${owned.channel.slug}/about`);
+  return { ok: true };
+}
+
 export async function addModAction(_prev: FormState, formData: FormData): Promise<FormState> {
   const owned = await ownedChannel();
   if (!owned) return { error: "No tienes ningún canal." };

@@ -10,7 +10,7 @@ import { Player } from "@/components/Player";
 import { Chat } from "@/components/Chat";
 import { LiveViewers } from "@/components/LiveViewers";
 import { FollowButton } from "@/components/FollowButton";
-import { ReplayIcon, StarIcon } from "@/components/icons";
+import { ReplayIcon, StarIcon, InfoIcon } from "@/components/icons";
 import { formatViewers } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -101,6 +101,12 @@ export default async function ChannelPage({
             </div>
             <div className="flex items-center gap-2">
               <FollowButton slug={channel.slug} initialFollowing={following} />
+              <Link
+                href={`/channel/${channel.slug}/about`}
+                className="flex items-center gap-1.5 rounded-md bg-ink-3 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-edge"
+              >
+                <InfoIcon className="size-4" /> {t("channel.about")}
+              </Link>
               <Link
                 href={`/channel/${channel.slug}/vod`}
                 className="flex items-center gap-1.5 rounded-md bg-ink-3 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-edge"

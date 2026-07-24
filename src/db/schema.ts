@@ -34,6 +34,9 @@ export const channels = sqliteTable("channels", {
   slowModeDefault: integer("slow_mode_default").notNull().default(0),
   followersOnly: integer("followers_only", { mode: "boolean" }).notNull().default(false),
   bannedWords: text("banned_words", { mode: "json" }).$type<string[]>(),
+  // Perfil del canal (página "Sobre el canal").
+  trailerUrl: text("trailer_url"),
+  bio: text("bio"),
 });
 
 export const categories = sqliteTable("categories", {

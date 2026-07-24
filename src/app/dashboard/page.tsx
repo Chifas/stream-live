@@ -88,6 +88,9 @@ export default async function DashboardPage() {
         <Link href={`/channel/${channel.slug}`} className="rounded-md bg-ink-3 px-3 py-1.5 text-sm hover:bg-edge">
           Ver mi canal
         </Link>
+        <Link href={`/channel/${channel.slug}/about`} className="rounded-md bg-ink-3 px-3 py-1.5 text-sm hover:bg-edge">
+          Sobre el canal / tráiler
+        </Link>
         <Link href={`/channel/${channel.slug}/vod`} className="rounded-md bg-ink-3 px-3 py-1.5 text-sm hover:bg-edge">
           Repeticiones
         </Link>

@@ -55,7 +55,9 @@ CREATE TABLE IF NOT EXISTS channels (
   about TEXT NOT NULL,
   slow_mode_default INTEGER NOT NULL DEFAULT 0,
   followers_only INTEGER NOT NULL DEFAULT 0,
-  banned_words TEXT
+  banned_words TEXT,
+  trailer_url TEXT,
+  bio TEXT
 );
 CREATE TABLE IF NOT EXISTS categories (
   id TEXT PRIMARY KEY,
@@ -115,6 +117,8 @@ async function migrate(client: Client) {
   await addColumn("ALTER TABLE channels ADD COLUMN slow_mode_default INTEGER NOT NULL DEFAULT 0");
   await addColumn("ALTER TABLE channels ADD COLUMN followers_only INTEGER NOT NULL DEFAULT 0");
   await addColumn("ALTER TABLE channels ADD COLUMN banned_words TEXT");
+  await addColumn("ALTER TABLE channels ADD COLUMN trailer_url TEXT");
+  await addColumn("ALTER TABLE channels ADD COLUMN bio TEXT");
   await client.execute(
     "UPDATE channels SET stream_key = slug WHERE stream_key IS NULL OR stream_key = ''",
   );

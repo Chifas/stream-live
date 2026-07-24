@@ -26,6 +26,9 @@ const DEMO_MODS: Record<string, string[]> = {
   nova_plays: ["espectador", "moderador"],
 };
 
+// Tráiler de ejemplo (mp4 público) para que la página "Sobre el canal" se vea poblada.
+const DEMO_TRAILER = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+
 /** Siembra datos de demo la primera vez (si la tabla de canales está vacía). */
 export async function seedIfEmpty(db: LibSQLDatabase<typeof schema>) {
   const [{ count }] = await db
@@ -86,6 +89,8 @@ export async function seedIfEmpty(db: LibSQLDatabase<typeof schema>) {
       isLive: c.isLive,
       followers: c.followers,
       about: c.about,
+      trailerUrl: DEMO_TRAILER,
+      bio: `${c.about}\n\nHorario habitual: tardes entre semana. ¡Únete a la comunidad, participa en el chat y no te pierdas los directos!`,
     })),
   );
 

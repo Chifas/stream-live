@@ -140,3 +140,24 @@ export const EyeIcon = (p: IconProps) => (
     <circle cx="12" cy="12" r="3" />
   </Line>
 );
+
+export const PencilIcon = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" />
+  </Line>
+);
+
+export const VideoIcon = (p: IconProps) => (
+  <Line {...p}>
+    <rect x="2" y="6" width="14" height="12" rx="2" />
+    <path d="m22 8-6 4 6 4V8Z" />
+  </Line>
+);
+
+export const InfoIcon = (p: IconProps) => (
+  <Line {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 11v5M12 8h.01" />
+  </Line>
+);

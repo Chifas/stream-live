@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo pre-fired >> /tmp/claude-hook-check.txt; node .claude/hooks/guard-secrets.cjs",
+            "command": "node .claude/hooks/guard-secrets.cjs",
             "statusMessage": "Checking for protected files..."
           }
         ]
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo post-fired >> /tmp/claude-hook-check.txt; node .claude/hooks/format-on-edit.cjs",
+            "command": "node .claude/hooks/format-on-edit.cjs",
             "statusMessage": "Formatting and linting..."
           }
         ]

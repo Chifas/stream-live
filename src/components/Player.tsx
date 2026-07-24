@@ -133,6 +133,7 @@ export function Player({ src, poster, live = false }: PlayerProps) {
         if (data.fatal) setError("No se pudo cargar la emisión. Reintentando…");
       });
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setError("Tu navegador no soporta este vídeo.");
     }
 
